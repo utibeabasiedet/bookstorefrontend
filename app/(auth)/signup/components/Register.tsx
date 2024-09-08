@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FaSpinner } from 'react-icons/fa'; // Import loading icon
+import axios from "axios";
 
 // Define the schema using Zod
 const formSchema = z.object({
@@ -51,38 +52,37 @@ const RegisterForm = () => {
   // Define the submit handler
   const onSubmit = async (data: FormSchemaType) => {
     setLoading(true); // Start loading
-
+  
     try {
-      const response = await fetch("http://localhost:5000/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          // If the response is JSON, parse it
-          const errorData = await response.json();
-          console.error("Error:", JSON.stringify(errorData, null, 2));
-        } else {
-          // If the response is not JSON (e.g., HTML error page), handle it
-          const errorText = await response.text();
-          console.error("Error response:", errorText);
+      // Make the POST request using axios
+      const response = await axios.post(
+        "https://bookstore-1-ooja.onrender.com/api/users/register", 
+        data, 
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // Include credentials (cookies, etc.)
         }
+      );
+  
+      // Handle the response
+      if (response.status >= 200 && response.status < 300) {
+        toast.success("User registered successfully!");
+        console.log("User registered successfully:", response.data);
+        router.push("/login"); // Navigate to the login page
+      } else {
         throw new Error("Failed to register user");
       }
-
-      const result = await response.json();
-      toast.success("User registered successfully!");
-      console.log("User registered successfully:", result);
-      
-      router.push("/login"); // Navigate to login page
-    } catch (error) {
-      toast.error("Error registering user");
-      console.error(error);
+    } catch (error:any) {
+      // Handle the error
+      if (error.response && error.response.data) {
+        console.error("Error:", JSON.stringify(error.response.data, null, 2));
+        toast.error(error.response.data.message || "Error registering user");
+      } else {
+        console.error("Error:", error.message);
+        toast.error("Error registering user");
+      }
     } finally {
       setLoading(false); // Stop loading
     }

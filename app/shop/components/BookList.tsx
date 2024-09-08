@@ -15,7 +15,7 @@ const BookList = () => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/users/profile",
+          "https://bookstore-1-ooja.onrender.com/api/users/profile",
           {
             withCredentials: true, // Include cookies
           }
@@ -29,7 +29,7 @@ const BookList = () => {
 
     const fetchBooks = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/books");
+        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/books");
         setBooks(response.data);
         console.log(response);
       } catch (error) {
@@ -56,7 +56,7 @@ const BookList = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/cart/add",
+        "https://bookstore-1-ooja.onrender.com/api/cart/add",
         {
           userId, // Send user ID
           item: book,
