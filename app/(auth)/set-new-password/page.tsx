@@ -1,12 +1,9 @@
-import React from "react";
-import NewPassword from "./components/NewPassword";
+import React from 'react'
 
 const page = () => {
   return (
-    <div>
-      <NewPassword />
-    </div>
-  );
-};
+    <div>page</div>
+  )
+}
 
-export default page;
+export default page
