@@ -31,7 +31,7 @@ const Header = () => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users/login-status", {
+        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/users/login-status", {
           withCredentials: true, // Send cookies with the request
         });
         setIsLoggedIn(response.data.isLoggedIn); // Assuming the API returns { isLoggedIn: true/false }
@@ -42,7 +42,7 @@ const Header = () => {
 
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/cart", {
+        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/cart", {
           withCredentials: true, // Include cookies for authentication
         });
         setCartItemCount(response.data.length); // Update cart item count with the length of the items array
@@ -57,7 +57,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/users/logout", {}, {
+      await axios.post("https://bookstore-1-ooja.onrender.com/api/users/logout", {}, {
         withCredentials: true,  // Include cookies in the request
       });
       setIsLoggedIn(false);  // Update login status

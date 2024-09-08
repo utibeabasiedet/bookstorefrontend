@@ -59,7 +59,7 @@ const RegisterForm = () => {
       toast.success("User registered successfully!");
       router.push("/shop"); // Navigate to shop page
     } catch (error) {
-      toast.error("Error registering user");
+      toast.error("Error Login in User");
       console.error(error);
     } finally {
       setLoading(false); // Stop loading

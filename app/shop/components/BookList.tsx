@@ -29,7 +29,9 @@ const BookList = () => {
 
     const fetchBooks = async () => {
       try {
-        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/books");
+        const response = await axios.get(
+          "https://bookstore-1-ooja.onrender.com/api/books"
+        );
         setBooks(response.data);
         console.log(response);
       } catch (error) {
@@ -45,7 +47,7 @@ const BookList = () => {
   const addToCart = async (book: {
     _id: string;
     title: string;
-    price: number;
+    price: number; // Make sure price is passed here
     description: string;
     imageUrl: string | null;
   }) => {
@@ -53,31 +55,74 @@ const BookList = () => {
       alert("User ID not found. Cannot add to cart.");
       return;
     }
-
+  
     try {
+      const cartItem = {
+        userId, // Ensure this is correctly set
+        bookId: book._id, // Book ID is required on the backend
+        title: book.title,
+        price: book.price, // Corrected this reference
+        imageUrl: book.imageUrl,
+      };
+      console.log(cartItem)
+  
       const response = await axios.post(
-        "https://bookstore-1-ooja.onrender.com/api/cart/add",
-        {
-          userId, // Send user ID
-          item: book,
-        },
+        "http://localhost:5000/api/cart/add",
+        cartItem,
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true, // Include cookies for authentication
+          withCredentials: true, // Required to authenticate the user
         }
       );
-
-      cartState.cart.set(response.data); // Update state with the new cart data
-      console.log(response.data);
+  
+      if (response.status >= 200 && response.status < 300) {
+        // Update the cart state
+        cartState.cart.set((prevCart: any) => [...prevCart, response.data]);
+        console.log("Item added to cart:", response.data);
+      } else {
+        throw new Error("Failed to add item to cart");
+      }
     } catch (error: any) {
       console.error("Error adding item to cart:", error);
-      if (error && error.response.status === 401) {
+  
+      if (error?.response?.status === 401) {
         alert("You are not authorized. Please log in.");
+      } else {
+        alert("An error occurred while adding the item to the cart.");
       }
     }
   };
+  
+
+  // const addToCart = async (book) => {
+  //   try {
+  //     const cartItem = {
+  //       bookId: book._id, // Pass only the necessary fields
+  //       title: book.title,
+  //       price: book.price,
+  //       imageUrl: book.imageUrl,
+  //     };
+
+  //     const response = await axios.post(
+  //       "https://bookstore-1-ooja.onrender.com/api/cart/add",
+  //       cartItem,
+  //       { withCredentials: true }
+  //     );
+
+  //     cartState.cart.set(prevCart => [...prevCart, response.data]); // Update cart state
+  //   } catch (error) {
+  //     console.error(error);
+  //     if (error.response?.status === 400) {
+  //       alert("Item is already in the cart.");
+  //     } else if (error.response?.status === 401) {
+  //       alert("Please log in.");
+  //     } else {
+  //       alert("An error occurred while adding to the cart.");
+  //     }
+  //   }
+  // };
 
   // Handle country change
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -95,8 +140,7 @@ const BookList = () => {
           id="country"
           value={selectedCountry}
           onChange={handleCountryChange}
-          className="p-2 border border-gray-300 rounded-md shadow-sm"
-        >
+          className="p-2 border border-gray-300 rounded-md shadow-sm">
           <option value="NGN">Nigeria</option>
           <option value="EU">Europe</option>
           <option value="UK">United Kingdom</option>
@@ -124,7 +168,9 @@ const BookList = () => {
                 : book.prices.US; // Default to US if nothing else matches
 
             return (
-              <li key={book._id} className="bg-white shadow-lg rounded-lg overflow-hidden">
+              <li
+                key={book._id}
+                className="bg-white shadow-lg rounded-lg overflow-hidden">
                 {book.imageUrl && (
                   <div className="relative w-full h-48">
                     <Image
@@ -146,11 +192,18 @@ const BookList = () => {
                     {selectedCountry === "US" && `$${book.prices.US}`}
                   </p>
                   <button
-                    onClick={() => addToCart({ ...book, price })}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition-colors"
-                  >
-                    Add to Cart
-                  </button>
+  onClick={() => addToCart({
+    _id: book._id,
+    title: book.title,
+    price: price, // Explicitly pass the calculated price
+    description: book.description,
+    imageUrl: book.imageUrl,
+  })}
+  className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition-colors"
+>
+  Add to Cart
+</button>
+
                 </div>
               </li>
             );
