@@ -99,7 +99,7 @@ const CartList = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row p-4 lg:space-x-8 space-y-4 lg:space-y-0">
+    <div className="flex flex-col lg:flex-row p-2 lg:space-x-8 space-y-4 lg:space-y-0">
       {/* Left Section: Cart Items */}
       <div className="flex-1">
         <Toaster position="top-right" reverseOrder={false} />

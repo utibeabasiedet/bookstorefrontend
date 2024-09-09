@@ -10,7 +10,7 @@ const page = () => {
           <h1 className="text-center text-2xl font-bold">Shopping Cart</h1>
         </div>
       </div>
-      <div className="px-10"> <CartList/> </div>
+      <div className=" px-4 sm:px-10"> <CartList/> </div>
     </section>
   );
 };
