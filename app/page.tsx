@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import Hero from "./(home)/components/Hero";
+import Testimoni from "./(home)/components/testimonal";
+
 
 const Home = () => {
   return (
@@ -58,6 +60,7 @@ const Home = () => {
           </Link>
         </div>
       </section>
+      <Testimoni/>
 
      
     </div>

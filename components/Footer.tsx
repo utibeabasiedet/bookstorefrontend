@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"; // ShadCN Input component
 
 const Footer = () => {
   return (
-    <section className="bg-[#012E4A]">
+    <section className="bg-[#012E4A] mt-10">
       <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col lg:flex-row text-white space-y-8 lg:space-y-0 lg:space-x-12">
         <div className="w-full lg:w-[50%] flex flex-col lg:flex-row gap-y-8 lg:gap-x-8">
           {/* Logo and description */}
