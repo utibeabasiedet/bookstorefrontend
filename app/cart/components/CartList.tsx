@@ -21,6 +21,7 @@ const CartList = () => {
           withCredentials: true, // Include cookies for authentication
         });
         setCartItems(response.data); // Set the fetched cart items
+        console.log(response.data)
         calculateTotalPrice(response.data); // Calculate the total price
       } catch (error) {
         console.error("Error fetching cart items:", error);

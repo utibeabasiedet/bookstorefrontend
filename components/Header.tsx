@@ -35,6 +35,7 @@ const Header = () => {
           withCredentials: true, // Send cookies with the request
         });
         setIsLoggedIn(response.data.isLoggedIn); // Assuming the API returns { isLoggedIn: true/false }
+        console.log(response.data.isLoggedIn)
       } catch (error) {
         console.error("Error checking login status:", error);
       }

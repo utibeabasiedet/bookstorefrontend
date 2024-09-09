@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import "./globals.css";
 import Header from "@/components/Header";
 import type { Metadata } from "next";
@@ -7,12 +8,12 @@ import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-// import { Footer, NavBar } from "./home/components/index";
+
 
 export const metadata: Metadata = {
   title: "UEAIR",
   description:
-    "UAIER, we offer web development, UI/UX, software product management,data analysis, python,JavaScript mastery, Blockchain development training  services.",
+    "UAIER",
 };
 
 export default function RootLayout({
@@ -26,7 +27,8 @@ export default function RootLayout({
         <Header />
         <ToastContainer />
         {children}
-        {/* <Footer /> */}
+        <Footer />
+        
       </body>
     </html>
   );

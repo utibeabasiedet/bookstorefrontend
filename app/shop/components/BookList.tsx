@@ -4,18 +4,20 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import useCartState from "@/services/stateManager";
 import axios from "axios";
+import { FaStar, FaRegStar } from 'react-icons/fa'; // Import star icons
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>("NGN"); // Default country
+  const [addedBooks, setAddedBooks] = useState<Set<string>>(new Set()); // Track added books
   const cartState = useCartState();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          "https://bookstore-1-ooja.onrender.com/api/users/profile",
+          "http://localhost:5000/api/users/profile",
           {
             withCredentials: true, // Include cookies
           }
@@ -30,7 +32,7 @@ const BookList = () => {
     const fetchBooks = async () => {
       try {
         const response = await axios.get(
-          "https://bookstore-1-ooja.onrender.com/api/books"
+          "http://localhost:5000/api/books"
         );
         setBooks(response.data);
         console.log(response);
@@ -43,11 +45,10 @@ const BookList = () => {
     fetchBooks(); // Fetch books
   }, []);
 
-  // Handle adding to cart
   const addToCart = async (book: {
     _id: string;
     title: string;
-    price: number; // Make sure price is passed here
+    price: number;
     description: string;
     imageUrl: string | null;
   }) => {
@@ -55,20 +56,19 @@ const BookList = () => {
       alert("User ID not found. Cannot add to cart.");
       return;
     }
-  
+
     try {
       const cartItem = {
-        userId, // Ensure this is correctly set
-        bookId: book._id, // Book ID is required on the backend
+        _id: book._id,
         title: book.title,
-        price: book.price, // Corrected this reference
-        imageUrl: book.imageUrl,
+        price: book.price,
+        image: book.imageUrl
       };
-      console.log(cartItem)
-  
+      console.log(cartItem);
+
       const response = await axios.post(
         "http://localhost:5000/api/cart/add",
-        cartItem,
+        { item: cartItem },
         {
           headers: {
             "Content-Type": "application/json",
@@ -76,9 +76,9 @@ const BookList = () => {
           withCredentials: true, // Required to authenticate the user
         }
       );
-  
+
       if (response.status >= 200 && response.status < 300) {
-        // Update the cart state
+        setAddedBooks(new Set([...addedBooks, book._id])); // Update added books
         cartState.cart.set((prevCart: any) => [...prevCart, response.data]);
         console.log("Item added to cart:", response.data);
       } else {
@@ -86,45 +86,15 @@ const BookList = () => {
       }
     } catch (error: any) {
       console.error("Error adding item to cart:", error);
-  
-      if (error?.response?.status === 401) {
-        alert("You are not authorized. Please log in.");
+
+      if (error.response?.status === 400) {
+        alert("Invalid item data. Please check the item details.");
       } else {
         alert("An error occurred while adding the item to the cart.");
       }
     }
   };
-  
 
-  // const addToCart = async (book) => {
-  //   try {
-  //     const cartItem = {
-  //       bookId: book._id, // Pass only the necessary fields
-  //       title: book.title,
-  //       price: book.price,
-  //       imageUrl: book.imageUrl,
-  //     };
-
-  //     const response = await axios.post(
-  //       "https://bookstore-1-ooja.onrender.com/api/cart/add",
-  //       cartItem,
-  //       { withCredentials: true }
-  //     );
-
-  //     cartState.cart.set(prevCart => [...prevCart, response.data]); // Update cart state
-  //   } catch (error) {
-  //     console.error(error);
-  //     if (error.response?.status === 400) {
-  //       alert("Item is already in the cart.");
-  //     } else if (error.response?.status === 401) {
-  //       alert("Please log in.");
-  //     } else {
-  //       alert("An error occurred while adding to the cart.");
-  //     }
-  //   }
-  // };
-
-  // Handle country change
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCountry(event.target.value);
   };
@@ -156,8 +126,8 @@ const BookList = () => {
             prices: { NGN: number; EU: number; UK: number; US: number };
             description: string;
             imageUrl: string | null;
+            rating: number; // Add rating property
           }) => {
-            // Get the price based on the selected country
             const price =
               selectedCountry === "NGN"
                 ? book.prices.NGN
@@ -165,12 +135,12 @@ const BookList = () => {
                 ? book.prices.EU
                 : selectedCountry === "UK"
                 ? book.prices.UK
-                : book.prices.US; // Default to US if nothing else matches
+                : book.prices.US;
 
             return (
               <li
                 key={book._id}
-                className="bg-white shadow-lg rounded-lg overflow-hidden">
+                className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
                 {book.imageUrl && (
                   <div className="relative w-full h-48">
                     <Image
@@ -182,7 +152,6 @@ const BookList = () => {
                     />
                   </div>
                 )}
-
                 <div className="p-4">
                   <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
                   <p className="text-gray-600 mb-2">
@@ -191,19 +160,29 @@ const BookList = () => {
                     {selectedCountry === "UK" && `£${book.prices.UK}`}
                     {selectedCountry === "US" && `$${book.prices.US}`}
                   </p>
+                  <div className="flex items-center mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i}>
+                        {i < book.rating ? (
+                          <FaStar className="text-yellow-400" />
+                        ) : (
+                          <FaRegStar className="text-gray-400" />
+                        )}
+                      </span>
+                    ))}
+                  </div>
                   <button
-  onClick={() => addToCart({
-    _id: book._id,
-    title: book.title,
-    price: price, // Explicitly pass the calculated price
-    description: book.description,
-    imageUrl: book.imageUrl,
-  })}
-  className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition-colors"
->
-  Add to Cart
-</button>
-
+                    onClick={() => addToCart({
+                      _id: book._id,
+                      title: book.title,
+                      price: price,
+                      description: book.description,
+                      imageUrl: book.imageUrl,
+                    })}
+                    className={`mt-2 px-4 py-2 text-white font-semibold rounded-md transition-colors ${addedBooks.has(book._id) ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'}`}
+                  >
+                    {addedBooks.has(book._id) ? "View Cart" : "Add to Cart"}
+                  </button>
                 </div>
               </li>
             );
