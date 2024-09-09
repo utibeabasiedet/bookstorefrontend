@@ -8,28 +8,34 @@ import toast, { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic"; // Import dynamic to load Paystack on the client side
 
 // Dynamically import PaystackButton to only load it on the client side
-const PaystackButton = dynamic(() => import("react-paystack").then(mod => mod.PaystackButton), { ssr: false });
+const PaystackButton = dynamic(
+  () => import("react-paystack").then(mod => mod.PaystackButton),
+  { ssr: false }
+);
 
 const CartList = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
-  const [totalPrice, setTotalPrice] = useState<number>(0); // State to store total price
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
-  const [userEmail, setUserEmail] = useState<string>(""); // Store user email
-  const cartState = useCartState(); // Assuming you're managing state globally
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string>("");
 
-  // Fetch cart items
+  // Retrieve selected currency from local storage
+  const selectedCurrency = typeof window !== "undefined" ? localStorage.getItem("selectedCountry") || "NGN" : "NGN";
+
+  const cartState = useCartState();
+
   useEffect(() => {
     const fetchCartItems = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/cart", {
-          withCredentials: true, // Include cookies for authentication
+          withCredentials: true,
         });
-        const items = Array.isArray(response.data) ? response.data : []; // Ensure array response
-        setCartItems(items); // Set the fetched cart items
-        calculateTotalPrice(items); // Calculate the total price
+        const items = Array.isArray(response.data) ? response.data : [];
+        setCartItems(items);
+        calculateTotalPrice(items);
       } catch (error) {
         console.error("Error fetching cart items:", error);
         setError("Failed to load cart items. Please try again.");
@@ -39,16 +45,15 @@ const CartList = () => {
     };
 
     fetchCartItems();
-  }, [cartState.cart]); // Re-fetch whenever cart state changes
+  }, [cartState.cart]);
 
-  // Fetch user profile to get email
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/users/profile", {
           withCredentials: true,
         });
-        setUserEmail(response.data.email); // Set user email from response
+        setUserEmail(response.data.email);
       } catch (error) {
         console.error("Error fetching user profile:", error);
         setError("Failed to load user information.");
@@ -59,20 +64,22 @@ const CartList = () => {
   }, []);
 
   const calculateTotalPrice = (items: any[]) => {
-    const total = items.reduce((sum, item) => sum + (item.price || 0), 0); // Handle case where item price is missing
+    const total = items.reduce((sum, item) => sum + (item.price || 0), 0);
     setTotalPrice(total);
   };
 
   const removeFromCart = async (bookId: string) => {
     try {
-      const response = await axios.delete(`https://bookstore-1-ooja.onrender.com/api/cart/delete/${bookId}`, {
-        withCredentials: true,
-      });
+      const response = await axios.delete(
+        `https://bookstore-1-ooja.onrender.com/api/cart/delete/${bookId}`,
+        {
+          withCredentials: true,
+        }
+      );
       const updatedCartItems = Array.isArray(response.data) ? response.data : [];
-      setCartItems(updatedCartItems); // Update cart items after deletion
-      calculateTotalPrice(updatedCartItems); // Recalculate the total price
-      
-      // Show toast notification for success
+      setCartItems(updatedCartItems);
+      calculateTotalPrice(updatedCartItems);
+
       toast.success("Item removed from cart.");
     } catch (error) {
       console.error("Error removing item from cart:", error);
@@ -81,17 +88,15 @@ const CartList = () => {
     }
   };
 
-  // Paystack configuration
   const paystackConfig = {
-    reference: new Date().getTime().toString(), // Generate a unique reference
-    email: userEmail, // Use the user's email
-    amount: totalPrice * 100, // Convert to kobo (1 NGN = 100 kobo)
-    publicKey: "pk_test_11f2b33c4435c39bba26d6ba87946a3f26f0d86e", // Your Paystack public key
-    currency: "NGN", // Specify currency (NGN for Nigeria)
+    reference: new Date().getTime().toString(),
+    email: userEmail,
+    amount: totalPrice * 100,
+    publicKey: "pk_test_11f2b33c4435c39bba26d6ba87946a3f26f0d86e",
+    currency: selectedCurrency, // Set currency dynamically
     onSuccess: (reference: any) => {
       console.log("Payment successful:", reference);
       toast.success("Payment successful! Thank you for your purchase.");
-      // You can add any additional actions upon successful payment here
     },
     onClose: () => {
       toast("Payment process was canceled.");
@@ -100,7 +105,6 @@ const CartList = () => {
 
   return (
     <div className="flex flex-col lg:flex-row p-2 lg:space-x-8 space-y-4 lg:space-y-0">
-      {/* Left Section: Cart Items */}
       <div className="flex-1">
         <Toaster position="top-right" reverseOrder={false} />
         <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
@@ -113,24 +117,31 @@ const CartList = () => {
             {cartItems.length === 0 ? (
               <p>Your cart is empty</p>
             ) : (
-              cartItems.map((book) => (
-                <li key={book._id} className="flex items-center justify-between bg-white p-4 shadow-md rounded-md">
+              cartItems.map(book => (
+                <li
+                  key={book._id}
+                  className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl">
                   <div className="flex items-center space-x-4">
                     {book.image && (
-                      <Image src={book.image} alt={book.title} width={80} height={100} className="rounded-md" />
+                      <Image
+                        src={book.image}
+                        alt={book.title}
+                        width={80}
+                        height={100}
+                        className="rounded-md"
+                      />
                     )}
                     <div>
                       <h3 className="text-lg font-semibold">{book.title}</h3>
                       <p className="text-sm text-gray-600">{book.description}</p>
                       <p className="text-md font-bold">${book.price.toFixed(2)}</p>
+                      <button
+                        onClick={() => removeFromCart(book._id)}
+                        className="text-red-500 hover:text-red-700 transition-colors">
+                        Remove
+                      </button>
                     </div>
                   </div>
-                  <button
-                    onClick={() => removeFromCart(book._id)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    Remove
-                  </button>
                 </li>
               ))
             )}
@@ -138,7 +149,6 @@ const CartList = () => {
         )}
       </div>
 
-      {/* Right Section: Total Price & Checkout */}
       <div className="w-full lg:w-1/3 bg-gray-100 p-6 shadow-lg rounded-lg">
         <h3 className="text-xl font-bold mb-4">Order Summary</h3>
         <div className="flex justify-between mb-4">
@@ -146,8 +156,7 @@ const CartList = () => {
           <span className="font-bold">${totalPrice.toFixed(2)}</span>
         </div>
 
-        {/* Paystack Checkout Button */}
-        {PaystackButton && ( // Only render Paystack button if it's loaded
+        {PaystackButton && (
           <PaystackButton
             {...paystackConfig}
             text="Proceed to Checkout"
@@ -160,3 +169,4 @@ const CartList = () => {
 };
 
 export default CartList;
+

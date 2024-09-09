@@ -4,26 +4,28 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import useCartState from "@/services/stateManager";
 import axios from "axios";
-import { FaStar, FaRegStar } from 'react-icons/fa'; // Import star icons
+import { FaStar, FaRegStar } from 'react-icons/fa';
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
   const [userId, setUserId] = useState<string | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<string>("NGN"); // Default country
-  const [addedBooks, setAddedBooks] = useState<Set<string>>(new Set()); // Track added books
+  const [selectedCountry, setSelectedCountry] = useState<string>(() => {
+    // Initialize from local storage if available
+    return localStorage.getItem("selectedCountry") || "NGN";
+  });
+  const [addedBooks, setAddedBooks] = useState<Set<string>>(new Set());
   const cartState = useCartState();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/users/profile",
+          "https://bookstore-1-ooja.onrender.com/api/users/profile",
           {
-            withCredentials: true, // Include cookies
+            withCredentials: true,
           }
         );
-        setUserId(response.data._id); // Store user ID
-        console.log(response.data);
+        setUserId(response.data._id);
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
       }
@@ -32,18 +34,20 @@ const BookList = () => {
     const fetchBooks = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/books"
+          "https://bookstore-1-ooja.onrender.com/api/books"
         );
         setBooks(response.data);
-        console.log(response);
       } catch (error) {
         console.error("Failed to fetch books:", error);
       }
     };
 
-    fetchUserProfile(); // Fetch user ID
-    fetchBooks(); // Fetch books
+    fetchUserProfile();
+    fetchBooks();
   }, []);
+
+ 
+  
 
   const addToCart = async (book: {
     _id: string;
@@ -64,44 +68,39 @@ const BookList = () => {
         price: book.price,
         image: book.imageUrl
       };
-      console.log(cartItem);
 
       const response = await axios.post(
-        "http://localhost:5000/api/cart/add",
+        "https://bookstore-1-ooja.onrender.com/api/cart/add",
         { item: cartItem },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true, // Required to authenticate the user
+          withCredentials: true,
         }
       );
 
       if (response.status >= 200 && response.status < 300) {
-        setAddedBooks(new Set([...addedBooks, book._id])); // Update added books
+        setAddedBooks(new Set([...addedBooks, book._id]));
         cartState.cart.set((prevCart: any) => [...prevCart, response.data]);
-        console.log("Item added to cart:", response.data);
       } else {
         throw new Error("Failed to add item to cart");
       }
     } catch (error: any) {
       console.error("Error adding item to cart:", error);
-
-      if (error.response?.status === 400) {
-        alert("Invalid item data. Please check the item details.");
-      } else {
-        alert("An error occurred while adding the item to the cart.");
-      }
+      alert("An error occurred while adding the item to the cart.");
     }
   };
 
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCountry(event.target.value);
+    const country = event.target.value;
+    setSelectedCountry(country);
+    localStorage.setItem("selectedCountry", country); // Store selected country in local storage
+    console.log(selectedCountry)
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Country selector */}
       <div className="mb-8 text-center">
         <label htmlFor="country" className="mr-2 font-semibold">
           Select Country:
@@ -126,7 +125,7 @@ const BookList = () => {
             prices: { NGN: number; EU: number; UK: number; US: number };
             description: string;
             imageUrl: string | null;
-            rating: number; // Add rating property
+            rating: number;
           }) => {
             const price =
               selectedCountry === "NGN"
