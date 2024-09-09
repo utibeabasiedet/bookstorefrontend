@@ -17,7 +17,7 @@ const CartList = () => {
     // Fetch cart items from the API
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/cart", {
+        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/cart", {
           withCredentials: true, // Include cookies for authentication
         });
         setCartItems(response.data); // Set the fetched cart items
@@ -43,7 +43,7 @@ const CartList = () => {
   // Function to remove item from the cart
   const removeFromCart = async (bookId: string) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/cart/delete/${bookId}`, {
+      const response = await axios.delete(`https://bookstore-1-ooja.onrender.com/api/cart/delete/${bookId}`, {
         withCredentials: true,
       });
       setCartItems(response.data); // Ensure response.data is an array
