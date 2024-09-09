@@ -4,26 +4,24 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import useCartState from "@/services/stateManager";
 import axios from "axios";
-import { FaStar, FaRegStar } from 'react-icons/fa';
+import { FaStar, FaRegStar } from "react-icons/fa";
 
 const BookList = () => {
-  const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState<any[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<string>(() => {
-    // Initialize from local storage if available
-    return localStorage.getItem("selectedCountry") || "NGN";
-  });
+  const [selectedCountry, setSelectedCountry] = useState<string>("NGN");
   const [addedBooks, setAddedBooks] = useState<Set<string>>(new Set());
   const cartState = useCartState();
 
   useEffect(() => {
+    const country = localStorage.getItem("selectedCountry") || "NGN";
+    setSelectedCountry(country);
+
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
           "https://bookstore-1-ooja.onrender.com/api/users/profile",
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
         setUserId(response.data._id);
       } catch (error) {
@@ -46,16 +44,7 @@ const BookList = () => {
     fetchBooks();
   }, []);
 
- 
-  
-
-  const addToCart = async (book: {
-    _id: string;
-    title: string;
-    price: number;
-    description: string;
-    imageUrl: string | null;
-  }) => {
+  const addToCart = async (book: any) => {
     if (!userId) {
       alert("User ID not found. Cannot add to cart.");
       return;
@@ -66,7 +55,7 @@ const BookList = () => {
         _id: book._id,
         title: book.title,
         price: book.price,
-        image: book.imageUrl
+        image: book.imageUrl,
       };
 
       const response = await axios.post(
@@ -95,8 +84,9 @@ const BookList = () => {
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const country = event.target.value;
     setSelectedCountry(country);
-    localStorage.setItem("selectedCountry", country); // Store selected country in local storage
-    console.log(selectedCountry)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedCountry", country); // Store selected country in localStorage
+    }
   };
 
   return (
@@ -109,7 +99,8 @@ const BookList = () => {
           id="country"
           value={selectedCountry}
           onChange={handleCountryChange}
-          className="p-2 border border-gray-300 rounded-md shadow-sm">
+          className="p-2 border border-gray-300 rounded-md shadow-sm"
+        >
           <option value="NGN">Nigeria</option>
           <option value="EU">Europe</option>
           <option value="UK">United Kingdom</option>
@@ -118,75 +109,73 @@ const BookList = () => {
       </div>
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {books.map(
-          (book: {
-            _id: string;
-            title: string;
-            prices: { NGN: number; EU: number; UK: number; US: number };
-            description: string;
-            imageUrl: string | null;
-            rating: number;
-          }) => {
-            const price =
-              selectedCountry === "NGN"
-                ? book.prices.NGN
-                : selectedCountry === "EU"
-                ? book.prices.EU
-                : selectedCountry === "UK"
-                ? book.prices.UK
-                : book.prices.US;
+        {books.map((book) => {
+          const price =
+            selectedCountry === "NGN"
+              ? book.prices.NGN
+              : selectedCountry === "EU"
+              ? book.prices.EU
+              : selectedCountry === "UK"
+              ? book.prices.UK
+              : book.prices.US;
 
-            return (
-              <li
-                key={book._id}
-                className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-                {book.imageUrl && (
-                  <div className="relative w-full h-48">
-                    <Image
-                      src={book.imageUrl}
-                      alt={book.title}
-                      layout="fill"
-                      objectFit="cover"
-                      className="w-full h-full"
-                    />
-                  </div>
-                )}
-                <div className="p-4">
-                  <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
-                  <p className="text-gray-600 mb-2">
-                    {selectedCountry === "NGN" && `₦${book.prices.NGN}`}
-                    {selectedCountry === "EU" && `€${book.prices.EU}`}
-                    {selectedCountry === "UK" && `£${book.prices.UK}`}
-                    {selectedCountry === "US" && `$${book.prices.US}`}
-                  </p>
-                  <div className="flex items-center mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i}>
-                        {i < book.rating ? (
-                          <FaStar className="text-yellow-400" />
-                        ) : (
-                          <FaRegStar className="text-gray-400" />
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => addToCart({
+          return (
+            <li
+              key={book._id}
+              className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200"
+            >
+              {book.imageUrl && (
+                <div className="relative w-full h-48">
+                  <Image
+                    src={book.imageUrl}
+                    alt={book.title}
+                    layout="fill"
+                    objectFit="cover"
+                    className="w-full h-full"
+                  />
+                </div>
+              )}
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
+                <p className="text-gray-600 mb-2">
+                  {selectedCountry === "NGN" && `₦${book.prices.NGN}`}
+                  {selectedCountry === "EU" && `€${book.prices.EU}`}
+                  {selectedCountry === "UK" && `£${book.prices.UK}`}
+                  {selectedCountry === "US" && `$${book.prices.US}`}
+                </p>
+                <div className="flex items-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i}>
+                      {i < book.rating ? (
+                        <FaStar className="text-yellow-400" />
+                      ) : (
+                        <FaRegStar className="text-gray-400" />
+                      )}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  onClick={() =>
+                    addToCart({
                       _id: book._id,
                       title: book.title,
                       price: price,
                       description: book.description,
                       imageUrl: book.imageUrl,
-                    })}
-                    className={`mt-2 px-4 py-2 text-white font-semibold rounded-md transition-colors ${addedBooks.has(book._id) ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'}`}
-                  >
-                    {addedBooks.has(book._id) ? "View Cart" : "Add to Cart"}
-                  </button>
-                </div>
-              </li>
-            );
-          }
-        )}
+                    })
+                  }
+                  className={`mt-2 px-4 py-2 text-white font-semibold rounded-md transition-colors ${
+                    addedBooks.has(book._id)
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-blue-500 hover:bg-blue-600"
+                  }`}
+                >
+                  {addedBooks.has(book._id) ? "View Cart" : "Add to Cart"}
+                </button>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -9,7 +9,7 @@ import dynamic from "next/dynamic"; // Import dynamic to load Paystack on the cl
 
 // Dynamically import PaystackButton to only load it on the client side
 const PaystackButton = dynamic(
-  () => import("react-paystack").then(mod => mod.PaystackButton),
+  () => import("react-paystack").then((mod) => mod.PaystackButton),
   { ssr: false }
 );
 
@@ -19,20 +19,29 @@ const CartList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
-
-  // Retrieve selected currency from local storage
-  const selectedCurrency = typeof window !== "undefined" ? localStorage.getItem("selectedCountry") || "NGN" : "NGN";
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("NGN");
 
   const cartState = useCartState();
+
+  useEffect(() => {
+    // Only access localStorage on the client side
+    if (typeof window !== "undefined") {
+      const storedCurrency = localStorage.getItem("selectedCountry") || "NGN";
+      setSelectedCurrency(storedCurrency);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchCartItems = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/cart", {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          "https://bookstore-1-ooja.onrender.com/api/cart",
+          {
+            withCredentials: true,
+          }
+        );
         const items = Array.isArray(response.data) ? response.data : [];
         setCartItems(items);
         calculateTotalPrice(items);
@@ -50,9 +59,12 @@ const CartList = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/users/profile", {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          "https://bookstore-1-ooja.onrender.com/api/users/profile",
+          {
+            withCredentials: true,
+          }
+        );
         setUserEmail(response.data.email);
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -117,10 +129,11 @@ const CartList = () => {
             {cartItems.length === 0 ? (
               <p>Your cart is empty</p>
             ) : (
-              cartItems.map(book => (
+              cartItems.map((book) => (
                 <li
                   key={book._id}
-                  className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl">
+                  className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl"
+                >
                   <div className="flex items-center space-x-4">
                     {book.image && (
                       <Image
@@ -137,7 +150,8 @@ const CartList = () => {
                       <p className="text-md font-bold">${book.price.toFixed(2)}</p>
                       <button
                         onClick={() => removeFromCart(book._id)}
-                        className="text-red-500 hover:text-red-700 transition-colors">
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
                         Remove
                       </button>
                     </div>
@@ -169,4 +183,3 @@ const CartList = () => {
 };
 
 export default CartList;
-
