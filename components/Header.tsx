@@ -7,7 +7,7 @@ import { RxCross2 } from "react-icons/rx";
 import { FaShoppingCart } from "react-icons/fa";
 import Image from "next/image";
 import useCartState from "@/services/stateManager"; // Adjust the import path as needed
-import Logo from '../public/img/logo/white-logo.svg';
+import Logo from '../public/img/logo/black-logo.svg';
 import axios from "axios";
 
 const navLinks = [

@@ -1,32 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import Hero from "./(home)/components/Hero";
 
 const Home = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section */}
-      <section className="relative bg-blue-800 text-white">
-        <div className="absolute inset-0">
-          <Image
-            src="/path-to-your-background-image.jpg"
-            alt="Background Image"
-            layout="fill"
-            objectFit="cover"
-            className="opacity-30"
-          />
-        </div>
-        <div className="relative container mx-auto px-6 py-12 flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
-            Discover Your Next Great Read
-          </h1>
-          <p className="text-lg md:text-2xl mb-8">
-            Explore our curated selection of best-selling books across all genres.
-          </p>
-          <Link href="/shop" className="bg-yellow-500 text-gray-900 px-6 py-3 rounded-full text-lg font-semibold hover:bg-yellow-600 transition">
-            Shop Now
-          </Link>
-        </div>
-      </section>
+      {/* real hero */}
+      <Hero />
+   
+      
 
       {/* Featured Books Section */}
       <section className="container mx-auto px-6 py-12">
