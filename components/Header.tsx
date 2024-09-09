@@ -68,7 +68,7 @@ const Header = () => {
   };
 
   return (
-    <header className="h-[13vh] w-full px-[7%] flex justify-between items-center border-b-2">
+    <header className="h-[13vh] w-full px-[7%] flex justify-between z-50 items-center border-b-2">
       {/* Logo */}
       <div>
         <Link href="/">
@@ -131,7 +131,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`lg:hidden bg-black text-white flex flex-col left-0 h-[77vh] w-[70vw] absolute top-[13vh] transform transition-transform duration-500 ease-in-out ${
+        className={`lg:hidden z-50 bg-gray-50 text-black flex flex-col left-0 h-[77vh] w-[70vw] absolute top-[13vh] transform transition-transform duration-500 ease-in-out ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

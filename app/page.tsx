@@ -77,29 +77,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-6">
-        <div className="container mx-auto px-6 flex flex-col items-center">
-          <h2 className="text-xl font-bold mb-4">Book Store</h2>
-          <ul className="flex space-x-6 mb-4">
-            <li>
-              <Link href="/" className="hover:text-yellow-500">Home</Link>
-            </li>
-            <li>
-              <Link href="/shop" className="hover:text-yellow-500">Shop</Link>
-            </li>
-            <li>
-              <Link href="/about" className="hover:text-yellow-500">About</Link>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:text-yellow-500">Contact</Link>
-            </li>
-          </ul>
-          <p className="text-sm">
-            &copy; {new Date().getFullYear()} Book Store. All rights reserved.
-          </p>
-        </div>
-      </footer>
+     
     </div>
   );
 };
