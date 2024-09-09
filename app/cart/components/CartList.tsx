@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -11,61 +9,62 @@ import useCartState from "@/services/stateManager";
 const CartList = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0); // State to store total price
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
   const cartState = useCartState(); // Assuming you're managing state globally
 
   useEffect(() => {
-    // Fetch cart items from the API
     const fetchCartItems = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/cart", {
           withCredentials: true, // Include cookies for authentication
         });
-        setCartItems(response.data); // Set the fetched cart items
-        console.log(response.data)
-        calculateTotalPrice(response.data); // Calculate the total price
+        const items = Array.isArray(response.data) ? response.data : []; // Ensure array response
+        setCartItems(items); // Set the fetched cart items
+        calculateTotalPrice(items); // Calculate the total price
       } catch (error) {
         console.error("Error fetching cart items:", error);
+        setError("Failed to load cart items. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCartItems();
   }, [cartState.cart]); // Re-fetch whenever cart state changes
 
-  // Function to calculate total price
   const calculateTotalPrice = (items: any[]) => {
-    if (!Array.isArray(items)) {
-      items = []; // Default to an empty array if items is not an array
-    }
-    const total = items.reduce((sum, item) => sum + item.price, 0);
+    const total = items.reduce((sum, item) => sum + (item.price || 0), 0); // Handle case where item price is missing
     setTotalPrice(total);
   };
 
-  // Function to remove item from the cart
   const removeFromCart = async (bookId: string) => {
     try {
       const response = await axios.delete(`https://bookstore-1-ooja.onrender.com/api/cart/delete/${bookId}`, {
         withCredentials: true,
       });
-      setCartItems(response.data); // Ensure response.data is an array
-      calculateTotalPrice(response.data); // Recalculate the total price
+      const updatedCartItems = Array.isArray(response.data) ? response.data : [];
+      setCartItems(updatedCartItems); // Update cart items after deletion
+      calculateTotalPrice(updatedCartItems); // Recalculate the total price
     } catch (error) {
       console.error("Error removing item from cart:", error);
+      setError("Failed to remove item. Please try again.");
     }
   };
 
-  // Paystack configuration
-  const paystackConfig = {
-    reference: new Date().getTime().toString(),
-    email: 'utibeabasiedetarget252@gmail.com', // Replace with the customer's email
-    amount: totalPrice * 100, // Amount in kobo
-    publicKey: 'pk_test_11f2b33c4435c39bba26d6ba87946a3f26f0d86e', // Your Paystack public key
-  };
+  // Paystack configuration (uncomment once PaystackButton is used)
+  // const paystackConfig = {
+  //   reference: new Date().getTime().toString(),
+  //   email: 'utibeabasiedetarget252@gmail.com', // Replace with the customer's email
+  //   amount: totalPrice * 100, // Amount in kobo
+  //   publicKey: 'pk_test_11f2b33c4435c39bba26d6ba87946a3f26f0d86e', // Your Paystack public key
+  // };
 
-  // Success handler
   const handleSuccess = (reference: string) => {
-    // console.log('Payment successful:', reference);
+    console.log('Payment successful:', reference);
     // Handle successful payment here
-    // You may want to save payment details to your backend
   };
 
   return (
@@ -73,32 +72,38 @@ const CartList = () => {
       {/* Left Section: Cart Items */}
       <div className="flex-1">
         <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
-        <ul className="space-y-4">
-          {cartItems.length === 0 ? (
-            <p>Your cart is empty</p>
-          ) : (
-            cartItems.map((book) => (
-              <li key={book._id} className="flex items-center justify-between bg-white p-4 shadow-md rounded-md">
-                <div className="flex items-center space-x-4">
-                  {book.image && (
-                    <Image src={book.image} alt={book.title} width={80} height={100} className="rounded-md" />
-                  )}
-                  <div>
-                    <h3 className="text-lg font-semibold">{book.title}</h3>
-                    <p className="text-sm text-gray-600">{book.description}</p>
-                    <p className="text-md font-bold">${book.price.toFixed(2)}</p>
+        {loading ? (
+          <p>Loading cart items...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <ul className="space-y-4">
+            {cartItems.length === 0 ? (
+              <p>Your cart is empty</p>
+            ) : (
+              cartItems.map((book) => (
+                <li key={book._id} className="flex items-center justify-between bg-white p-4 shadow-md rounded-md">
+                  <div className="flex items-center space-x-4">
+                    {book.image && (
+                      <Image src={book.image} alt={book.title} width={80} height={100} className="rounded-md" />
+                    )}
+                    <div>
+                      <h3 className="text-lg font-semibold">{book.title}</h3>
+                      <p className="text-sm text-gray-600">{book.description}</p>
+                      <p className="text-md font-bold">${book.price.toFixed(2)}</p>
+                    </div>
                   </div>
-                </div>
-                <button
-                  onClick={() => removeFromCart(book._id)}
-                  className="text-red-500 hover:text-red-700 transition-colors"
-                >
-                  Remove
-                </button>
-              </li>
-            ))
-          )}
-        </ul>
+                  <button
+                    onClick={() => removeFromCart(book._id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+        )}
       </div>
 
       {/* Right Section: Total Price & Checkout */}
@@ -108,6 +113,7 @@ const CartList = () => {
           <span className="font-semibold">Total Price:</span>
           <span className="font-bold">${totalPrice.toFixed(2)}</span>
         </div>
+        {/* Uncomment for Paystack Integration */}
         {/* <PaystackButton
           {...paystackConfig}
           text="Proceed to Checkout"
