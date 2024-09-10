@@ -110,7 +110,7 @@ const RegisterForm = () => {
           {loading ? (
             <FaSpinner className="animate-spin mr-2" /> // Show loading spinner
           ) : (
-            "Register"
+            "Login"
           )}
         </Button>
       </form>

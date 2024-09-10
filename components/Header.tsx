@@ -58,14 +58,16 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("https://bookstore-1-ooja.onrender.com/api/users/logout", {}, {
-        withCredentials: true,  // Include cookies in the request
+      const response = await axios.post("https://bookstore-1-ooja.onrender.com/api/users/logout", {}, {
+        withCredentials: true,  // Ensure that credentials are sent
       });
-      setIsLoggedIn(false);  // Update login status
+      console.log(response);
+      setIsLoggedIn(false);  // Update login status on successful logout
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
+  
 
   return (
     <header className="h-[13vh] w-full px-[7%] flex justify-between z-50 items-center border-b-2">
@@ -141,7 +143,7 @@ const Header = () => {
           </Link>
         ))}
         {isLoggedIn ? (
-          <button onClick={handleLogout} className="py-2 border-b-2 text-center hover:text-[#02B68F]">
+          <button onClick={handleLogout}  className="py-2 border-b-2 text-center hover:text-[#02B68F]">
             Logout
           </button>
         ) : (
