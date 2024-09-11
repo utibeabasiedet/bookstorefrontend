@@ -54,7 +54,7 @@ const Header = () => {
 
     checkLoginStatus();
     fetchCartItems();
-  }, [cartState.cart]); // Add `cartState.cart` as a dependency to update the cart count when it changes
+  }, [cartState.cart, cartState.loginState]); // Add `cartState.cart` as a dependency to update the cart count when it changes
 
   const handleLogout = async () => {
     try {

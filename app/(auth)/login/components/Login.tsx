@@ -7,16 +7,14 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
+import {Form,FormControl,FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FaSpinner } from "react-icons/fa";
+import useCartState from "@/services/stateManager";
 import axios from "axios"; // Import axios
 
 // Define the schema using Zod
@@ -34,6 +32,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const cartState = useCartState();
 
   // Initialize the form with useForm and zodResolver
   const form = useForm<FormSchemaType>({
@@ -55,6 +54,7 @@ const RegisterForm = () => {
         { withCredentials: true } // Ensure cookies are included
       );
       console.log(response)
+      cartState.loginState.set(true)
 
       toast.success("User registered successfully!");
       router.push("/shop"); // Navigate to shop page
