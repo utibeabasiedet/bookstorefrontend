@@ -4,6 +4,7 @@ import Hero from "./(home)/components/Hero";
 import Testimoni from "./(home)/components/testimonal";
 import FeatureCard from "@/components/FeatureCard";
 import TopCategories from "./(home)/components/TopCategories";
+import Members from "./(home)/components/Members";
 
 const Home = () => {
   return (
@@ -38,41 +39,13 @@ const Home = () => {
         </div>
       </section>
 
-      {/* About Us Section */}
-      <section className="bg-gray-100 py-12">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-6">About Us</h2>
-          <p className="text-lg mb-6">
-            At Book Store, we are passionate about bringing you the best books
-            from all genres. Our team of book enthusiasts carefully curates a
-            selection of titles to ensure you have access to the most
-            captivating reads.
-          </p>
-          <Link
-            href="/about"
-            className="bg-yellow-500 text-gray-900 px-6 py-3 rounded-full text-lg font-semibold hover:bg-yellow-600 transition">
-            Learn More
-          </Link>
-        </div>
-      </section>
+     
 
-      {/* Contact Section */}
-      <section className="py-12">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-6">Contact Us</h2>
-          <p className="text-lg mb-6">
-            Have any questions or need assistance? Feel free to reach out to us
-            through the contact form on our website or via email at
-            support@bookstore.com.
-          </p>
-          <Link
-            href="/contact"
-            className="bg-yellow-500 text-gray-900 px-6 py-3 rounded-full text-lg font-semibold hover:bg-yellow-600 transition">
-            Get in Touch
-          </Link>
-        </div>
-      </section>
       <Testimoni />
+      <div className="bg-[#F5F5F5] px-8 py-10">
+      <Members />
+      </div>
+      
     </div>
   );
 };
