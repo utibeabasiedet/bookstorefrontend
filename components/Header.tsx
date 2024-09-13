@@ -21,11 +21,28 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); // Track login status
   const [cartItemCount, setCartItemCount] = useState<number>(0); // Track cart item count
+  const [isSticky, setIsSticky] = useState<boolean>(false); // Track sticky state
   const cartState = useCartState();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  // Handle scroll for sticky effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.2) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   // Fetch user login status and cart items
   useEffect(() => {
@@ -70,7 +87,7 @@ const Header = () => {
   
 
   return (
-    <header className="h-[13vh] w-full px-[7%] flex justify-between z-50 items-center border-b-2">
+    <header className={`w-full px-[7%] flex justify-between z-50 items-center border-b-2 transition-transform duration-300 ${isSticky ? "fixed top-0 bg-white shadow-lg" : ""} h-[13vh]`}>
       {/* Logo */}
       <div>
         <Link href="/">
@@ -114,18 +131,14 @@ const Header = () => {
         <div className="relative">
           <FaBarsStaggered
             onClick={toggleMenu}
-            className={`transition-opacity duration-300 ${
-              menuOpen ? "opacity-0" : "opacity-100"
-            }`}
-            style={{ position: "absolute" }}
+            className={`transition-opacity duration-300 ${menuOpen ? "opacity-0" : "opacity-100"}`}
+            style={{ position: "absolute", left:"-20px" }}
             size={24}
           />
           <RxCross2
             onClick={toggleMenu}
-            className={`transition-opacity duration-300 ${
-              menuOpen ? "opacity-100" : "opacity-0"
-            }`}
-            style={{ position: "absolute" }}
+            className={`transition-opacity duration-300 ${menuOpen ? "opacity-100" : "opacity-0"}`}
+            style={{ position: "absolute", left:"-20px" }}
             size={24}
           />
         </div>
@@ -133,9 +146,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`lg:hidden z-50 bg-gray-50 text-black flex flex-col left-0 h-[77vh] w-[70vw] absolute top-[13vh] transform transition-transform duration-500 ease-in-out ${
-          menuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`lg:hidden z-50 bg-gray-50 text-black flex flex-col left-0 h-[77vh] w-[70vw] absolute top-[13vh] transform transition-transform duration-500 ease-in-out ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {navLinks.map((link) => (
           <Link className="py-2 border-b-2 text-center hover:text-[#02B68F]" key={link.label} href={link.href} onClick={toggleMenu}>
