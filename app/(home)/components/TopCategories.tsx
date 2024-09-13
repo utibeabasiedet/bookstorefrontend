@@ -102,7 +102,7 @@ const TopCategories: React.FC<TopCategoriesProps> = ({
         {listTestimoni.map((testimonis, index) => (
             <div className="px-3 flex items-stretch relative" key={index}>
             <div className="relative border-2 border-gray-500 bg-white rounded-full hover:border-orange-500 transition-all p-8 flex flex-col items-center">
-              <div className="relative w-40 h-40 rounded-full overflow-hidden">
+              <div className="relative w-40 h-52 rounded-full overflow-hidden">
                 <Image src={Circle} alt="Background Circle" layout="fill" objectFit="cover" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Image src={testimonis.image} alt="Icon People" layout="fill" objectFit="cover" />
