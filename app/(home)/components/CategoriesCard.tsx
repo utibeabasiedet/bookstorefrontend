@@ -19,7 +19,7 @@ const CategoriesCard = () => {
     const fetchTopBooks = async () => {
       try {
         const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/books?limit=4");
-        setBooks(response.data); // Assuming the response contains book data
+        setBooks(response.data.slice(0, 4)); // Limit the books to 4
       } catch (error) {
         console.error("Failed to fetch books:", error);
       }
@@ -87,7 +87,7 @@ const CategoriesCard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {books.map((book) => {
+        {books.slice(0, 4).map((book) => {  // Use slice to limit to 4 items
           const price = selectedCountry === "NGN"
             ? book.prices.NGN
             : selectedCountry === "EU"
