@@ -128,7 +128,7 @@ const Members: React.FC<TopCategoriesProps> = ({
                   />
                 </div>
               </div>
-              <div className="border-dashed border-[#036280]  mt-5 px-5 rounded-xl py-4 border-2 flex flex-col items-center">
+              <div className="border-dashed border-[#036280] w-[100%]  mt-5 px-5 rounded-xl py-4 border-2 flex flex-col items-center">
                 <h2 className="text-lg text-center font-bold">
                   {testimonis.name}
                 </h2>
