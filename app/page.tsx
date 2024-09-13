@@ -40,8 +40,9 @@ const Home = () => {
       </section>
 
      
-
+      <div className="bg-[#F5F5F5] px-4 sm:px-8 py-10">
       <Testimoni />
+      </div>
       <div className="bg-[#F5F5F5] px-4 sm:px-8 py-10">
       <Members />
       </div>

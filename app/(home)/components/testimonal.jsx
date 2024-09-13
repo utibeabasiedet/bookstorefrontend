@@ -81,7 +81,7 @@ const Testimoni = ({
   const [sliderRef, setSliderRef] = useState(null);
 
   return (
-    <>
+    <div className="bg-[#F5F5F5]">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold">
           Trusted by Thousands of Happy Customers
@@ -99,8 +99,8 @@ const Testimoni = ({
         className="flex items-stretch justify-items-stretch"
       >
         {listTestimoni.map((listTestimonis, index) => (
-          <div className="px-3 flex items-stretch" key={index}>
-            <div className="shadow-lg hover:shadow-xl rounded-lg p-8 flex flex-col h-full">
+          <div className="px-3 flex rounded-[20px] items-stretch" key={index}>
+            <div className="bg-white  rounded-[20px] p-8 flex flex-col h-full">
               <div className="flex flex-col xl:flex-row w-full items-stretch xl:items-center">
                 <div className="flex order-2 xl:order-1">
                   <Image
@@ -148,7 +148,7 @@ const Testimoni = ({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
