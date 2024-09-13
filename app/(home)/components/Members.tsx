@@ -101,6 +101,7 @@ const Members: React.FC<TopCategoriesProps> = ({
       <p className="text-center  text-xl mb-10">
         Meet the People Behind Uyai Akwa Ibom
       </p>
+      <div className="relative">
       <Slider
         {...settings}
         arrows={false}
@@ -137,20 +138,22 @@ const Members: React.FC<TopCategoriesProps> = ({
           </div>
         ))}
       </Slider>
-      <div className="flex w-full items-center justify-end">
-        <div className="flex flex-none justify-between w-auto mt-14">
+      <div className="flex w-full items-center absolute top-[32%]  justify-between">
+        <div className="flex flex-none justify-between w-full mt-14">
           <div
-            className="mx-4 flex items-center justify-center h-14 w-14 rounded-full bg-white border-orange-500 border hover:bg-orange-500 hover:text-white-500 transition-all text-orange-500 cursor-pointer"
+            className="mx-4 flex items-center justify-center h-14 w-14 rounded-full bg-white border-orange-500 border hover:bg-orange-500 hover:text-white transition-all text-orange-500 cursor-pointer"
             onClick={() => sliderRef.current?.slickPrev()}>
             <FaArrowLeft className="h-6 w-6" />
           </div>
           <div
-            className="flex items-center justify-center h-14 w-14 rounded-full bg-white border-orange-500 border hover:bg-orange-500 hover:text-white-500 transition-all text-orange-500 cursor-pointer"
+            className="flex items-center justify-center h-14 w-14 rounded-full bg-white border-orange-500 border hover:bg-orange-500 hover:text-white transition-all text-orange-500 cursor-pointer"
             onClick={() => sliderRef.current?.slickNext()}>
             <FaArrowRight className="h-6 w-6" />
           </div>
         </div>
       </div>
+      </div>
+      
     </>
   );
 };
