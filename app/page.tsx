@@ -5,6 +5,7 @@ import Testimoni from "./(home)/components/testimonal";
 import FeatureCard from "@/components/FeatureCard";
 import TopCategories from "./(home)/components/TopCategories";
 import Members from "./(home)/components/Members";
+import CategoriesCard from "./(home)/components/CategoriesCard";
 
 const Home = () => {
   return (
@@ -17,26 +18,8 @@ const Home = () => {
       </div>
 
       {/* Featured Books Section */}
-      <section className="container mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold mb-6 text-center">Featured Books</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Book Card */}
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <Image
-              src="/path-to-book-cover.jpg"
-              alt="Book Title"
-              width={300}
-              height={400}
-              className="object-cover"
-            />
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2">Book Title</h3>
-              <p className="text-gray-700 mb-4">Author Name</p>
-              <p className="text-gray-900 font-bold">$19.99</p>
-            </div>
-          </div>
-          {/* Repeat Book Card for other featured books */}
-        </div>
+      <section>
+      <CategoriesCard />
       </section>
 
      
