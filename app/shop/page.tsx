@@ -12,14 +12,7 @@ import {
 const page = () => {
   return (
     <section>
-      {/* <div className='bg-[#D0E1E7] flex justify-center items-center h-[50vh]'>
-        <div>
-        <h1 className='text-center'>Our Shop</h1>
-            <p className='text-center'>Home - ShOP Default</p>
-        </div>
-        
-            
-      </div> */}
+      
       <div className="breadcrumb-wrapper bg-[#D0E1E7] flex justify-center items-center h-[50vh] relative">
         {/* Book1 Image */}
         <div className="book1 absolute  top-0 left-0">

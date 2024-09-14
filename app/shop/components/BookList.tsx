@@ -91,15 +91,15 @@ const BookList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 text-center">
+      <div className="mb-8 ">
         <label htmlFor="country" className="mr-2 ">
           Location:
-        </label>
+        </label> <br />
         <select
           id="country"
           value={selectedCountry}
           onChange={handleCountryChange}
-          className="p-2 border border-gray-300 rounded-md shadow-sm"
+          className="p-2  rounded-md shadow-sm"
         >
           <option value="NGN">Nigeria</option>
           <option value="EU">Europe</option>
@@ -122,17 +122,22 @@ const BookList = () => {
           return (
             <li
               key={book._id}
-              className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200"
+              className="p-4"
             >
+              <div  className="rounded-lg overflow-hidden transition-shadow duration-300">
               {book.imageUrl && (
-                <div className="relative w-full h-48">
+                <div className="relative w-full bg-[#f5f5f5] flex justify-center items-center mx-auto h-64">
+                  <a href="#" className="w-[90%] justify-center items-center flex mx-auto">
                   <Image
                     src={book.imageUrl}
                     alt={book.title}
-                    layout="fill"
-                    objectFit="cover"
-                    className="w-full h-full"
+                    width={100}
+                      height={100}
+                      objectFit="cover"
+                      className="hover:scale-105 transition-transform w-[70%] h-[200px] duration-300"
                   />
+                  </a>
+                  
                 </div>
               )}
               <div className="p-4">
@@ -164,15 +169,17 @@ const BookList = () => {
                       imageUrl: book.imageUrl,
                     })
                   }
-                  className={`mt-2 px-4 py-2 text-white font-semibold rounded-md transition-colors ${
+                  className={`flex justify-center items-center rounded-full bg-[#d0e1e7] font-bold hover:bg-orange-600 hover:text-white  py-4 px-4 w-full transition-all duration-300 ${
                     addedBooks.has(book._id)
                       ? "bg-green-500 hover:bg-green-600"
-                      : "bg-blue-500 hover:bg-blue-600"
+                      : "bg-[#d0e1e7] hover:bg-blue-600"
                   }`}
                 >
                   {addedBooks.has(book._id) ? "View Cart" : "Add to Cart"}
                 </button>
               </div>
+              </div>
+              
             </li>
           );
         })}

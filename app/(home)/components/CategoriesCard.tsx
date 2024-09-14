@@ -101,7 +101,7 @@ const CategoriesCard = () => {
               <div className="rounded-lg overflow-hidden transition-shadow duration-300">
                 {/* Book Thumbnail */}
                 <div className="relative w-full bg-[#f5f5f5] flex justify-center items-center mx-auto h-64">
-                  <a href="shop-details-2.html" className="w-[90%] justify-center items-center flex mx-auto">
+                  <a href="#" className="w-[90%] justify-center items-center flex mx-auto">
                     <Image
                       src={book.imageUrl}
                       alt={book.title}
