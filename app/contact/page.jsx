@@ -88,7 +88,7 @@ const BreadcrumbWrapper = () => {
 
       {/* Contact Section */}
       <div className="md:px-16 px-4 flex lg:flex-row flex-col mx-auto gap-4 py-16">
-        <div className="bg-[#036280] w-100% lg:w-[30%] text-white">
+        <div className="bg-[#036280] flex flex-col justify-around rounded-3xl px-4 py-5 w-100% lg:w-[35%] text-white">
           <div>
             <div className="flex gap-4 border-b border-b-white">
               <div className="border-2 border-dashed w-[50px] p-1 flex items-center justify-center h-[50px] rounded-full border-white">
@@ -124,7 +124,7 @@ const BreadcrumbWrapper = () => {
           </div>
         </div>
         
-        <div className="w-100% lg:w-[70%]">
+        <div className="w-100% lg:w-[65%]">
           <h1 className="text-3xl font-bold mb-4">Ready to Get Started?</h1>
           <p className="mb-8">
             We are always available to chat and respond to your questions and consultations. Send us a message!
@@ -133,11 +133,12 @@ const BreadcrumbWrapper = () => {
           {/* Form Section */}
           <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Name Input */}
-            <div className="col-span-1">
+            <div className="col-span-2 md:col-span-1">
+              <label className=" font-bold text-[#101010]">Your Name*</label>
               <Input
                 {...register("name")}
                 placeholder="Your Name"
-                className={`w-full ${errors.name ? "border-red-500" : ""}`}
+                className={`w-full rounded-2xl border-gray-300 h-14 mt-4 ${errors.name ? "border-red-500" : ""}`}
               />
               {errors.name && (
                 <span className="text-red-500 text-sm">{errors.name.message}</span>
@@ -145,11 +146,12 @@ const BreadcrumbWrapper = () => {
             </div>
 
             {/* Email Input */}
-            <div className="col-span-1">
+            <div className="col-span-2 md:col-span-1">
+            <label className=" font-bold">Your Email*</label>
               <Input
                 {...register("email")}
                 placeholder="Your Email"
-                className={`w-full ${errors.email ? "border-red-500" : ""}`}
+                className={`w-full mt-4 p-4 rounded-2xl border-gray-300 h-14 ${errors.email ? "border-red-500" : ""}`}
               />
               {errors.email && (
                 <span className="text-red-500 text-sm">{errors.email.message}</span>
@@ -158,10 +160,11 @@ const BreadcrumbWrapper = () => {
 
             {/* Message Textarea */}
             <div className="col-span-2">
+            <label className=" font-bold">Write Message</label>
               <Textarea
                 {...register("message")}
                 placeholder="Your Message"
-                className={`w-full ${errors.message ? "border-red-500" : ""}`}
+                className={`w-full mt-4 h-40 p-4 rounded-2xl border-gray-300 ${errors.message ? "border-red-500" : ""}`}
               />
               {errors.message && (
                 <span className="text-red-500 text-sm">{errors.message.message}</span>
@@ -169,10 +172,10 @@ const BreadcrumbWrapper = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="col-span-2 text-center">
+            <div className="col-span-2 text-cente">
               <button
                 type="submit"
-                className="bg-[#036280] text-white px-6 py-2 rounded-md"
+                className="bg-[#036280] rounded-full text-white px-6 py-4 "
               >
                 Send Message
               </button>
