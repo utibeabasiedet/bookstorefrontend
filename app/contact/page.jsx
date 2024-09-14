@@ -87,8 +87,8 @@ const BreadcrumbWrapper = () => {
       </div>
 
       {/* Contact Section */}
-      <div className="px-16 flex mx-auto gap-4 py-16">
-        <div className="bg-[#036280] w-[30%] text-white">
+      <div className="md:px-16 px-4 flex lg:flex-row flex-col mx-auto gap-4 py-16">
+        <div className="bg-[#036280] w-100% lg:w-[30%] text-white">
           <div>
             <div className="flex gap-4 border-b border-b-white">
               <div className="border-2 border-dashed w-[50px] p-1 flex items-center justify-center h-[50px] rounded-full border-white">
@@ -124,7 +124,7 @@ const BreadcrumbWrapper = () => {
           </div>
         </div>
         
-        <div className="w-[70%]">
+        <div className="w-100% lg:w-[70%]">
           <h1 className="text-3xl font-bold mb-4">Ready to Get Started?</h1>
           <p className="mb-8">
             We are always available to chat and respond to your questions and consultations. Send us a message!
