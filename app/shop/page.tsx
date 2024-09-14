@@ -56,7 +56,7 @@ const page = () => {
           </div>
         </div>
       </div>
-      <div className='px-10'>
+      <div className=' px-4 md:px-10'>
             <BookList/>
         </div>
     </section>
