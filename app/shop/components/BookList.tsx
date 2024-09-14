@@ -92,8 +92,8 @@ const BookList = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 text-center">
-        <label htmlFor="country" className="mr-2 font-semibold">
-          Select Country:
+        <label htmlFor="country" className="mr-2 ">
+          Location:
         </label>
         <select
           id="country"

@@ -44,24 +44,24 @@ const BreadcrumbWrapper = () => {
     <section>
       <div className="breadcrumb-wrapper bg-[#D0E1E7] flex justify-center items-center h-[50vh] relative">
         {/* Book1 Image */}
-        <div className="book1 absolute hidden lg:block -top-0 left-0">
+        <div className="book1 absolute  top-0 left-0">
           <Image
             src="/assets/img/hero/book1.png"
             alt="book"
             width={300}
             height={500}
-            className="w-auto h-[250px]"
+            className="w-[150px] h-[150px] md:w-[200px] sm:h-[250px]"
           />
         </div>
 
         {/* Book2 Image */}
-        <div className="book2 absolute top-10 hidden lg:block right-0">
+        <div className="book2 absolute bottom-0 md:top-10 block right-0">
           <Image
             src="/assets/img/hero/book2.png"
             alt="book"
             width={100}
             height={100}
-            className="w-[200px] h-[250px]"
+            className="w-[100px] h-[150px] md:w-[200px] sm:h-[250px]"
           />
         </div>
 
@@ -87,33 +87,33 @@ const BreadcrumbWrapper = () => {
       </div>
 
       {/* Contact Section */}
-      <div className="md:px-16 px-4 flex lg:flex-row flex-col mx-auto gap-4 py-16">
-        <div className="bg-[#036280] flex flex-col justify-around rounded-3xl px-4 py-5 w-100% lg:w-[35%] text-white">
+      <div className="md:px-16 px-4 flex lg:flex-row flex-col mx-auto gap-12 py-16">
+        <div className="bg-[#036280] flex flex-col justify-around rounded-3xl px-4 py-5 w-100% lg:w-[30%] text-white">
           <div>
-            <div className="flex gap-4 border-b border-b-white">
-              <div className="border-2 border-dashed w-[50px] p-1 flex items-center justify-center h-[50px] rounded-full border-white">
+            <div className="flex gap-4 border-b border-gray-200 py-4 px-4 sm:py-8 ">
+              <div className="border-2 border-dashed min-w-[50px] p-1 flex items-center justify-center h-[50px] rounded-full border-white">
                 <FontAwesomeIcon icon={faPhone} className="text-white" />
               </div>
               <div className="flex flex-col">
                 <div>Call Us 7/24</div>
-                <div className="text-2xl font-bold">+234 806 542 3816</div>
+                <div className="text-2xl font-bold text-wrap">+234 806 542 3816</div>
               </div>
             </div>
           </div>
           <div>
-            <div className="flex gap-4 border-b border-b-white">
-              <div className="border-2 border-dashed w-[50px] p-1 flex items-center justify-center h-[50px] rounded-full border-white">
+            <div className="flex gap-4 border-b border-gray-200 py-4 px-4 sm:py-8 ">
+              <div className="border-2 border-dashed min-w-[50px] p-1 flex items-center justify-center h-[50px] rounded-full border-white">
                 <FontAwesomeIcon icon={faEnvelope} className="text-white" />
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col text-wrap">
                 <div>Make a Quote</div>
-                <div className="text-2xl font-bold">info@uyaiakwaibom.com</div>
+                <div className="text-2xl font-bold text-wrap">info@uyaiakwaibom .com</div>
               </div>
             </div>
           </div>
           <div>
-            <div className="flex gap-4 border-b border-b-white">
-              <div className="border-2 border-dashed w-[50px] p-1 flex items-center justify-center h-[50px] rounded-full border-white">
+            <div className="flex gap-4  py-4 px-4 sm:py-8 ">
+              <div className="border-2 border-dashed min-w-[50px] p-1 flex items-center justify-center h-[50px] rounded-full border-white">
                 <FontAwesomeIcon icon={faLocationDot} className="text-white" />
               </div>
               <div className="flex flex-col">
@@ -124,7 +124,7 @@ const BreadcrumbWrapper = () => {
           </div>
         </div>
         
-        <div className="w-100% lg:w-[65%]">
+        <div className="w-100% lg:w-[70%]">
           <h1 className="text-3xl font-bold mb-4">Ready to Get Started?</h1>
           <p className="mb-8">
             We are always available to chat and respond to your questions and consultations. Send us a message!
@@ -134,7 +134,7 @@ const BreadcrumbWrapper = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Name Input */}
             <div className="col-span-2 md:col-span-1">
-              <label className=" font-bold text-[#101010]">Your Name*</label>
+              <label className=" font-bold text-[#101010]">Your Name *</label>
               <Input
                 {...register("name")}
                 placeholder="Your Name"
@@ -147,7 +147,7 @@ const BreadcrumbWrapper = () => {
 
             {/* Email Input */}
             <div className="col-span-2 md:col-span-1">
-            <label className=" font-bold">Your Email*</label>
+            <label className=" font-bold">Your Email *</label>
               <Input
                 {...register("email")}
                 placeholder="Your Email"
@@ -160,7 +160,7 @@ const BreadcrumbWrapper = () => {
 
             {/* Message Textarea */}
             <div className="col-span-2">
-            <label className=" font-bold">Write Message</label>
+            <label className=" font-bold">Write Message *</label>
               <Textarea
                 {...register("message")}
                 placeholder="Your Message"
