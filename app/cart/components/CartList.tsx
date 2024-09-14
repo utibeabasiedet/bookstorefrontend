@@ -91,7 +91,13 @@ const CartList = () => {
       const updatedCartItems = Array.isArray(response.data) ? response.data : [];
       setCartItems(updatedCartItems);
       calculateTotalPrice(updatedCartItems);
-
+  
+      // Remove the book from the addedBooks set in BookList
+      const storedAddedBooks = JSON.parse(localStorage.getItem("addedBooks") || "[]");
+      const newAddedBooks = storedAddedBooks.filter((id: string) => id !== bookId);
+      localStorage.setItem("addedBooks", JSON.stringify(newAddedBooks));
+  
+      cartState.cart.set(updatedCartItems);
       toast.success("Item removed from cart.");
     } catch (error) {
       console.error("Error removing item from cart:", error);
@@ -99,6 +105,7 @@ const CartList = () => {
       toast.error("Failed to remove item.");
     }
   };
+  
 
   const paystackConfig = {
     reference: new Date().getTime().toString(),

@@ -14,8 +14,21 @@ const BookList = () => {
   const cartState = useCartState();
 
   useEffect(() => {
+    const storedAddedBooks = localStorage.getItem("addedBooks");
+    if (storedAddedBooks) {
+      setAddedBooks(new Set(JSON.parse(storedAddedBooks)));
+    }
+  }, [cartState.cart]); // Add cartState.cart as a dependency to monitor cart changes
+
+  useEffect(() => {
+    // Load the country and added books from localStorage
     const country = localStorage.getItem("selectedCountry") || "NGN";
     setSelectedCountry(country);
+
+    const storedAddedBooks = localStorage.getItem("addedBooks");
+    if (storedAddedBooks) {
+      setAddedBooks(new Set(JSON.parse(storedAddedBooks)));
+    }
 
     const fetchUserProfile = async () => {
       try {
@@ -70,7 +83,12 @@ const BookList = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        setAddedBooks(new Set([...addedBooks, book._id]));
+        const newAddedBooks = new Set([...addedBooks, book._id]);
+        setAddedBooks(newAddedBooks);
+
+        // Save the added books to localStorage
+        localStorage.setItem("addedBooks", JSON.stringify([...newAddedBooks]));
+
         cartState.cart.set((prevCart: any) => [...prevCart, response.data]);
       } else {
         throw new Error("Failed to add item to cart");
@@ -91,8 +109,8 @@ const BookList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 ">
-        <label htmlFor="country" className="mr-2 ">
+      <div className="mb-8">
+        <label htmlFor="country" className="mr-2">
           Location:
         </label>{" "}
         <br />
@@ -100,7 +118,7 @@ const BookList = () => {
           id="country"
           value={selectedCountry}
           onChange={handleCountryChange}
-          className="p-2  rounded-md shadow-sm">
+          className="p-2 rounded-md shadow-sm">
           <option value="NGN">Nigeria</option>
           <option value="EU">Europe</option>
           <option value="UK">United Kingdom</option>
@@ -138,18 +156,18 @@ const BookList = () => {
                     </a>
                   </div>
                 )}
-                <div className="p-4">
-                <h3 className="text-lg font-bold text-gray-900">
+                <div className="pt-4">
+                  <h3 className="text-lg font-bold text-gray-900">
                     {book.title}
                   </h3>
-                  <p className=" mb-2 text-orange-600 font-bold">
+                  <p className="mb-2 text-orange-600 font-bold">
                     {selectedCountry === "NGN" && `₦${book.prices.NGN}`}
                     {selectedCountry === "EU" && `€${book.prices.EU}`}
                     {selectedCountry === "UK" && `£${book.prices.UK}`}
                     {selectedCountry === "US" && `$${book.prices.US}`}
                   </p>
-                   {/* Rating */}
-                   <ul className="flex mt-2 space-x-1 text-orange-600">
+                  {/* Rating */}
+                  <ul className="flex mt-2 space-x-1 text-orange-600">
                     {[...Array(5)].map((_, i) => (
                       <li key={i}>
                         {i < book.rating ? <FaStar /> : <FaRegStar />}
