@@ -94,13 +94,13 @@ const BookList = () => {
       <div className="mb-8 ">
         <label htmlFor="country" className="mr-2 ">
           Location:
-        </label> <br />
+        </label>{" "}
+        <br />
         <select
           id="country"
           value={selectedCountry}
           onChange={handleCountryChange}
-          className="p-2  rounded-md shadow-sm"
-        >
+          className="p-2  rounded-md shadow-sm">
           <option value="NGN">Nigeria</option>
           <option value="EU">Europe</option>
           <option value="UK">United Kingdom</option>
@@ -109,7 +109,7 @@ const BookList = () => {
       </div>
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {books.map((book) => {
+        {books.map(book => {
           const price =
             selectedCountry === "NGN"
               ? book.prices.NGN
@@ -120,66 +120,61 @@ const BookList = () => {
               : book.prices.US;
 
           return (
-            <li
-              key={book._id}
-              className="p-4"
-            >
-              <div  className="rounded-lg overflow-hidden transition-shadow duration-300">
-              {book.imageUrl && (
-                <div className="relative w-full bg-[#f5f5f5] flex justify-center items-center mx-auto h-64">
-                  <a href="#" className="w-[90%] justify-center items-center flex mx-auto">
-                  <Image
-                    src={book.imageUrl}
-                    alt={book.title}
-                    width={100}
-                      height={100}
-                      objectFit="cover"
-                      className="hover:scale-105 transition-transform w-[70%] h-[200px] duration-300"
-                  />
-                  </a>
-                  
+            <li key={book._id} className="p-4">
+              <div className="rounded-lg overflow-hidden transition-shadow duration-300">
+                {book.imageUrl && (
+                  <div className="relative w-full bg-[#f5f5f5] flex justify-center items-center mx-auto h-64">
+                    <a
+                      href="#"
+                      className="w-[90%] justify-center items-center flex mx-auto">
+                      <Image
+                        src={book.imageUrl}
+                        alt={book.title}
+                        width={100}
+                        height={100}
+                        objectFit="cover"
+                        className="hover:scale-105 transition-transform w-[70%] h-[200px] duration-300"
+                      />
+                    </a>
+                  </div>
+                )}
+                <div className="p-4">
+                <h3 className="text-lg font-bold text-gray-900">
+                    {book.title}
+                  </h3>
+                  <p className=" mb-2 text-orange-600 font-bold">
+                    {selectedCountry === "NGN" && `₦${book.prices.NGN}`}
+                    {selectedCountry === "EU" && `€${book.prices.EU}`}
+                    {selectedCountry === "UK" && `£${book.prices.UK}`}
+                    {selectedCountry === "US" && `$${book.prices.US}`}
+                  </p>
+                   {/* Rating */}
+                   <ul className="flex mt-2 space-x-1 text-orange-600">
+                    {[...Array(5)].map((_, i) => (
+                      <li key={i}>
+                        {i < book.rating ? <FaStar /> : <FaRegStar />}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() =>
+                      addToCart({
+                        _id: book._id,
+                        title: book.title,
+                        price: price,
+                        description: book.description,
+                        imageUrl: book.imageUrl,
+                      })
+                    }
+                    className={`flex justify-center mt-4 items-center rounded-full bg-[#d0e1e7] font-bold hover:bg-orange-600 hover:text-white  py-4 px-4 w-full transition-all duration-300 ${
+                      addedBooks.has(book._id)
+                        ? "bg-green-500 hover:bg-green-600"
+                        : "bg-[#d0e1e7] hover:bg-blue-600"
+                    }`}>
+                    {addedBooks.has(book._id) ? "View Cart" : "Add to Cart"}
+                  </button>
                 </div>
-              )}
-              <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
-                <p className="text-gray-600 mb-2">
-                  {selectedCountry === "NGN" && `₦${book.prices.NGN}`}
-                  {selectedCountry === "EU" && `€${book.prices.EU}`}
-                  {selectedCountry === "UK" && `£${book.prices.UK}`}
-                  {selectedCountry === "US" && `$${book.prices.US}`}
-                </p>
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i}>
-                      {i < book.rating ? (
-                        <FaStar className="text-yellow-400" />
-                      ) : (
-                        <FaRegStar className="text-gray-400" />
-                      )}
-                    </span>
-                  ))}
-                </div>
-                <button
-                  onClick={() =>
-                    addToCart({
-                      _id: book._id,
-                      title: book.title,
-                      price: price,
-                      description: book.description,
-                      imageUrl: book.imageUrl,
-                    })
-                  }
-                  className={`flex justify-center items-center rounded-full bg-[#d0e1e7] font-bold hover:bg-orange-600 hover:text-white  py-4 px-4 w-full transition-all duration-300 ${
-                    addedBooks.has(book._id)
-                      ? "bg-green-500 hover:bg-green-600"
-                      : "bg-[#d0e1e7] hover:bg-blue-600"
-                  }`}
-                >
-                  {addedBooks.has(book._id) ? "View Cart" : "Add to Cart"}
-                </button>
               </div>
-              </div>
-              
             </li>
           );
         })}

@@ -115,7 +115,7 @@ const CategoriesCard = () => {
 
                 {/* Content */}
                 <div className="p-4">
-                  <h5 className="text-gray-700 text-sm font-semibold">{book.category}</h5>
+                  {/* <h5 className="text-gray-700 text-sm font-semibold">{book.category}uu</h5> */}
                   <h3 className="text-lg font-bold text-gray-900">
                     <a href="shop-details.html">{book.title}</a>
                   </h3>
