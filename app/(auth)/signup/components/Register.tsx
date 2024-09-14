@@ -150,7 +150,7 @@ const RegisterForm = () => {
                   Sign In
                 </Link>
               </p>
-              <Link className="text-sm text-blue-700 hover:underline" href="/forgot-password">
+              <Link className="text-sm text-blue-700 hover:underline" href="#">
                Forgot Password?
               </Link>
             </div>

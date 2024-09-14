@@ -71,7 +71,7 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="h-auto py-10 flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-8 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold text-center text-gray-800">Sign In</h2>
         <Form {...form}>
@@ -139,7 +139,7 @@ const SignInForm = () => {
         <div className="text-center text-sm">
           <p className="text-gray-600">
             Don’t have an account?{" "}
-            <Link href="/register" className="text-indigo-600 hover:underline">
+            <Link href="/signup" className="text-indigo-600 hover:underline">
               Sign up
             </Link>
           </p>
