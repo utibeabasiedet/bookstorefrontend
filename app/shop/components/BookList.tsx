@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import useCartState from "@/services/stateManager";
+import { useRouter } from "next/navigation"; // import useRouter from Next.js
 import axios from "axios";
 import { FaStar, FaRegStar } from "react-icons/fa";
 
@@ -11,14 +11,7 @@ const BookList = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>("NGN");
   const [addedBooks, setAddedBooks] = useState<Set<string>>(new Set());
-  const cartState = useCartState();
-
-  useEffect(() => {
-    const storedAddedBooks = localStorage.getItem("addedBooks");
-    if (storedAddedBooks) {
-      setAddedBooks(new Set(JSON.parse(storedAddedBooks)));
-    }
-  }, [cartState.cart]); // Add cartState.cart as a dependency to monitor cart changes
+  const router = useRouter(); // use the router for navigation
 
   useEffect(() => {
     // Load the country and added books from localStorage
@@ -57,6 +50,10 @@ const BookList = () => {
     fetchBooks();
   }, []);
 
+  const handleViewDetails = (bookId: string) => {
+    router.push(`/shop/${bookId}`); // Navigate to the dynamic product details page
+  };
+
   const addToCart = async (book: any) => {
     if (!userId) {
       alert("User ID not found. Cannot add to cart.");
@@ -88,8 +85,6 @@ const BookList = () => {
 
         // Save the added books to localStorage
         localStorage.setItem("addedBooks", JSON.stringify([...newAddedBooks]));
-
-        cartState.cart.set((prevCart: any) => [...prevCart, response.data]);
       } else {
         throw new Error("Failed to add item to cart");
       }
@@ -99,35 +94,10 @@ const BookList = () => {
     }
   };
 
-  const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const country = event.target.value;
-    setSelectedCountry(country);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("selectedCountry", country); // Store selected country in localStorage
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <label htmlFor="country" className="mr-2">
-          Location:
-        </label>{" "}
-        <br />
-        <select
-          id="country"
-          value={selectedCountry}
-          onChange={handleCountryChange}
-          className="p-2 rounded-md shadow-sm">
-          <option value="NGN">Nigeria</option>
-          <option value="EU">Europe</option>
-          <option value="UK">United Kingdom</option>
-          <option value="US">United States</option>
-        </select>
-      </div>
-
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {books.map(book => {
+        {books.map((book) => {
           const price =
             selectedCountry === "NGN"
               ? book.prices.NGN
@@ -174,22 +144,19 @@ const BookList = () => {
                       </li>
                     ))}
                   </ul>
+
                   <button
                     onClick={() =>
-                      addToCart({
-                        _id: book._id,
-                        title: book.title,
-                        price: price,
-                        description: book.description,
-                        imageUrl: book.imageUrl,
-                      })
-                    }
-                    className={`flex justify-center mt-4 items-center rounded-full bg-[#d0e1e7] font-bold hover:bg-orange-600 hover:text-white  py-4 px-4 w-full transition-all duration-300 ${
                       addedBooks.has(book._id)
-                        ? "bg-green-500 hover:bg-green-600"
-                        : "bg-[#d0e1e7] hover:bg-blue-600"
+                        ? handleViewDetails(book._id) // View details if book is added to cart
+                        : addToCart(book) // Add to cart otherwise
+                    }
+                    className={`flex justify-center mt-4 items-center rounded-full font-bold py-4 px-4 w-full transition-all duration-300 ${
+                      addedBooks.has(book._id)
+                        ? "bg-green-500 hover:bg-green-600 text-white"
+                        : "bg-[#d0e1e7] hover:bg-orange-600 hover:text-white"
                     }`}>
-                    {addedBooks.has(book._id) ? "View Cart" : "Add to Cart"}
+                    {addedBooks.has(book._id) ? "View Details" : "Add to Cart"}
                   </button>
                 </div>
               </div>
