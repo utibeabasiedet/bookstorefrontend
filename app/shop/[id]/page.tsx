@@ -132,12 +132,13 @@ const ProductPage = () => {
           </div>
 
           {/* Proceed to Cart Button (No Add to Cart Button) */}
-          <button
-            onClick={proceedToCart}
+          <Link
+           href='/cart'
+           
             className="mt-6 w-full bg-orange-600 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition-all"
           >
             Proceed to Cart
-          </button>
+          </Link>
         </div>
       </div>
     </div>
