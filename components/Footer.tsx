@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import Logo from "../public/img/logo/white-logo.svg";
+import Logo from "../public/img/logo/uyai-logo.png";
 import Link from "next/link";
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaPaperPlane } from "react-icons/fa";
 import { Input } from "@/components/ui/input"; // ShadCN Input component
