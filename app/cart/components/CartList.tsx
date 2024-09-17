@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
@@ -6,24 +7,14 @@ import useCartState from "@/services/stateManager";
 import toast, { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 
-const PaystackButton = dynamic(() => import("react-paystack").then((mod) => mod.PaystackButton), { ssr: false });
-
-interface PaystackReference {
-  reference: string;
-  amount: number;
-  email: string;
-}
-
-interface CartItem {
-  _id: string;
-  title: string;
-  price: number;
-  image: string;
-  description: string;
-}
+// Dynamically import PaystackButton to load on the client side
+const PaystackButton = dynamic(
+  () => import("react-paystack").then((mod) => mod.PaystackButton),
+  { ssr: false }
+);
 
 const CartList = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<any[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +25,7 @@ const CartList = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // Fetch the selected currency from localStorage
       const storedCurrency = localStorage.getItem("selectedCountry") || "NGN";
       setSelectedCurrency(storedCurrency);
     }
@@ -44,9 +36,18 @@ const CartList = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/cart", { withCredentials: true });
-        const items: CartItem[] = Array.isArray(response.data) ? response.data : [];
+        const response = await axios.get(
+          "https://bookstore-1-ooja.onrender.com/api/cart",
+          {
+            withCredentials: true,
+          }
+        );
+        const items = Array.isArray(response.data) ? response.data : [];
         setCartItems(items);
+
+        // Log the cart items for debugging
+        console.log("Cart Items:", items);
+
         calculateTotalPrice(items);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -62,7 +63,12 @@ const CartList = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/users/profile", { withCredentials: true });
+        const response = await axios.get(
+          "https://bookstore-1-ooja.onrender.com/api/users/profile",
+          {
+            withCredentials: true,
+          }
+        );
         setUserEmail(response.data.email);
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -73,27 +79,45 @@ const CartList = () => {
     fetchUserProfile();
   }, []);
 
-  const calculateTotalPrice = (items: CartItem[]) => {
-    const total = items.reduce((sum, item) => {
-      const price =
-        selectedCurrency === "NGN"
-          ? item.price
-          : selectedCurrency === "EU"
-          ? item.price
-          : selectedCurrency === "UK"
-          ? item.price
-          : item.price;
-      return sum + price;
-    }, 0);
+  const calculateTotalPrice = (items: any[]) => {
+    let total = 0;
+
+    items.forEach((item) => {
+      // Log the item for debugging
+      console.log("Item:", item);
+
+      // Adjust the price based on the selected currency
+      const price = selectedCurrency === "NGN"
+        ? item.price // Use item.price directly
+        : selectedCurrency === "EU"
+        ? item.price // Adjust this if you have different price structure for EU
+        : selectedCurrency === "UK"
+        ? item.price // Adjust this if you have different price structure for UK
+        : item.price; // Adjust this if you have different price structure for US
+
+      // Ensure price is a number and fallback to 0 if undefined
+      const priceValue = typeof price === "number" ? price : 0;
+
+      // Log the price and its value for debugging
+      console.log(`Item: ${item.title}, Price: ${price}, Price Value: ${priceValue}`);
+
+      total += priceValue;
+    });
 
     setTotalPrice(total);
   };
 
   const removeFromCart = async (bookId: string) => {
     try {
-      const response = await axios.delete(`https://bookstore-1-ooja.onrender.com/api/cart/delete/${bookId}`, { withCredentials: true });
-      const updatedCartItems: CartItem[] = Array.isArray(response.data) ? response.data : [];
+      const response = await axios.delete(
+        `https://bookstore-1-ooja.onrender.com/api/cart/delete/${bookId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      const updatedCartItems = Array.isArray(response.data) ? response.data : [];
       setCartItems(updatedCartItems);
+
       calculateTotalPrice(updatedCartItems);
 
       const storedAddedBooks = JSON.parse(localStorage.getItem("addedBooks") || "[]");
@@ -114,34 +138,14 @@ const CartList = () => {
     email: userEmail,
     amount: totalPrice * 100,
     publicKey: "pk_test_11f2b33c4435c39bba26d6ba87946a3f26f0d86e",
-    currency: selectedCurrency,
-    onSuccess: async (reference: PaystackReference) => {
+    currency: selectedCurrency, // Set currency dynamically
+    onSuccess: (reference: any) => {
       console.log("Payment successful:", reference);
-      try {
-        await axios.post("https://bookstore-1-ooja.onrender.com/api/mymail/send-receipt", {
-          email: userEmail,
-          amount: totalPrice * 100,
-          reference: reference.reference,
-        });
-        toast.success("Payment successful! A receipt has been sent to your email.");
-      } catch (error) {
-        console.error("Error sending receipt email:", error);
-        toast.error("Payment was successful, but we couldn't send the receipt.");
-      }
+      toast.success("Payment successful! Thank you for your purchase.");
     },
     onClose: () => {
       toast("Payment process was canceled.");
     },
-  };
-
-  const getBookPrice = (book: CartItem) => {
-    return selectedCurrency === "NGN"
-      ? book.price
-      : selectedCurrency === "EU"
-      ? book.price
-      : selectedCurrency === "UK"
-      ? book.price
-      : book.price;
   };
 
   return (
@@ -159,46 +163,63 @@ const CartList = () => {
               <p>Your cart is empty</p>
             ) : (
               cartItems.map((book) => (
-                <li key={book._id} className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl">
+                <li
+                  key={book._id}
+                  className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl"
+                >
                   <div className="flex items-center space-x-4">
                     {book.image && (
-                      <Image src={book.image} alt={book.title} width={80} height={100} className="rounded-md" />
+                      <Image
+                        src={book.image}
+                        alt={book.title}
+                        width={80}
+                        height={100}
+                        className="rounded-md"
+                      />
                     )}
                     <div>
                       <h3 className="text-lg font-semibold">{book.title}</h3>
                       <p className="text-md font-bold">
-                        {selectedCurrency === "NGN" && `₦${getBookPrice(book).toFixed(2)}`}
-                        {selectedCurrency === "EU" && `€${getBookPrice(book).toFixed(2)}`}
-                        {selectedCurrency === "UK" && `£${getBookPrice(book).toFixed(2)}`}
-                        {selectedCurrency === "US" && `$${getBookPrice(book).toFixed(2)}`}
+                        {selectedCurrency === "NGN" && `₦${book.price ?? "Price not available"}`}
+                        {selectedCurrency === "EU" && `€${book.price ?? "Price not available"}`}
+                        {selectedCurrency === "UK" && `£${book.price ?? "Price not available"}`}
+                        {selectedCurrency === "US" && `$${book.price ?? "Price not available"}`}
                       </p>
-                      <p className="text-sm">{book.description}</p>
+
+                      <button
+                        onClick={() => removeFromCart(book._id)}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
+                        Remove
+                      </button>
                     </div>
                   </div>
-                  <button
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                    onClick={() => removeFromCart(book._id)}
-                  >
-                    Remove
-                  </button>
                 </li>
               ))
             )}
           </ul>
         )}
       </div>
-      <div className="lg:w-1/4">
-        <h2 className="text-xl font-bold mb-4">Cart Summary</h2>
-        <div className="bg-gray-100 p-4 rounded-lg">
-          <p className="text-lg font-semibold">Total Price:</p>
-          <p className="text-2xl font-bold">
+
+      <div className="w-full lg:w-1/3 bg-gray-100 p-6 shadow-lg rounded-lg">
+        <h3 className="text-xl font-bold mb-4">Order Summary</h3>
+        <div className="flex justify-between mb-4">
+          <span className="font-semibold">Total Price:</span>
+          <span className="font-bold">
             {selectedCurrency === "NGN" && `₦${totalPrice.toFixed(2)}`}
             {selectedCurrency === "EU" && `€${totalPrice.toFixed(2)}`}
             {selectedCurrency === "UK" && `£${totalPrice.toFixed(2)}`}
             {selectedCurrency === "US" && `$${totalPrice.toFixed(2)}`}
-          </p>
-          <PaystackButton {...paystackConfig} />
+          </span>
         </div>
+
+        {PaystackButton && (
+          <PaystackButton
+            {...paystackConfig}
+            text="Proceed to Checkout"
+            className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition-colors"
+          />
+        )}
       </div>
     </div>
   );
