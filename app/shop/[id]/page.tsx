@@ -7,6 +7,7 @@ import axios from "axios";
 import Image from "next/image";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import useCartState from "@/services/stateManager";
+import Link from 'next/link'
 
 const ProductPage = () => {
   const [book, setBook] = useState<any>(null);
@@ -132,12 +133,14 @@ const ProductPage = () => {
           </div>
 
           {/* Proceed to Cart Button (No Add to Cart Button) */}
+          
           <Link
            href='/cart'
            
-            className="mt-6 w-full bg-orange-600 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition-all"
+           
           >
-            Proceed to Cart
+            <button  className="mt-6 w-full bg-orange-600 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition-all"> Proceed to Cart</button>
+           
           </Link>
         </div>
       </div>

@@ -13,7 +13,7 @@ const Footer = () => {
           {/* Logo and description */}
           <div className="lg:w-[50%] flex flex-col gap-y-6">
             <Link href="/">
-              <Image src={Logo} alt="Logo" width={150} height={50} />
+              <Image src={Logo} alt="Logo" width={250} height={70} />
             </Link>
             <p>
               Making Akwa Ibom language and culture accessible and fun for young learners.

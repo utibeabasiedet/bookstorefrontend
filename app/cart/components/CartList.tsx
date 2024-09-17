@@ -5,9 +5,9 @@ import axios from "axios";
 import Image from "next/image";
 import useCartState from "@/services/stateManager";
 import toast, { Toaster } from "react-hot-toast";
-import dynamic from "next/dynamic"; // Import dynamic to load Paystack on the client side
+import dynamic from "next/dynamic";
 
-// Dynamically import PaystackButton to only load it on the client side
+// Dynamically import PaystackButton to load on the client side
 const PaystackButton = dynamic(
   () => import("react-paystack").then((mod) => mod.PaystackButton),
   { ssr: false }
@@ -24,8 +24,8 @@ const CartList = () => {
   const cartState = useCartState();
 
   useEffect(() => {
-    // Only access localStorage on the client side
     if (typeof window !== "undefined") {
+      // Fetch the selected currency from localStorage
       const storedCurrency = localStorage.getItem("selectedCountry") || "NGN";
       setSelectedCurrency(storedCurrency);
     }
@@ -44,6 +44,7 @@ const CartList = () => {
         );
         const items = Array.isArray(response.data) ? response.data : [];
         setCartItems(items);
+
         calculateTotalPrice(items);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -76,7 +77,20 @@ const CartList = () => {
   }, []);
 
   const calculateTotalPrice = (items: any[]) => {
-    const total = items.reduce((sum, item) => sum + (item.price || 0), 0);
+    const total = items.reduce((sum, item) => {
+      // Adjust the price based on the selected currency
+      const price =
+        selectedCurrency === "NGN"
+          ? item.prices?.NGN || item.price
+          : selectedCurrency === "EU"
+          ? item.prices?.EU || item.price
+          : selectedCurrency === "UK"
+          ? item.prices?.UK || item.price
+          : item.prices?.US || item.price;
+
+      return sum + price;
+    }, 0);
+
     setTotalPrice(total);
   };
 
@@ -90,13 +104,17 @@ const CartList = () => {
       );
       const updatedCartItems = Array.isArray(response.data) ? response.data : [];
       setCartItems(updatedCartItems);
+
       calculateTotalPrice(updatedCartItems);
-  
-      // Remove the book from the addedBooks set in BookList
-      const storedAddedBooks = JSON.parse(localStorage.getItem("addedBooks") || "[]");
-      const newAddedBooks = storedAddedBooks.filter((id: string) => id !== bookId);
+
+      const storedAddedBooks = JSON.parse(
+        localStorage.getItem("addedBooks") || "[]"
+      );
+      const newAddedBooks = storedAddedBooks.filter(
+        (id: string) => id !== bookId
+      );
       localStorage.setItem("addedBooks", JSON.stringify(newAddedBooks));
-  
+
       cartState.cart.set(updatedCartItems);
       toast.success("Item removed from cart.");
     } catch (error) {
@@ -105,21 +123,46 @@ const CartList = () => {
       toast.error("Failed to remove item.");
     }
   };
-  
 
   const paystackConfig = {
     reference: new Date().getTime().toString(),
     email: userEmail,
     amount: totalPrice * 100,
     publicKey: "pk_test_11f2b33c4435c39bba26d6ba87946a3f26f0d86e",
-    currency: selectedCurrency, // Set currency dynamically
-    onSuccess: (reference: any) => {
+    currency: selectedCurrency,
+    onSuccess: async (reference) => {
       console.log("Payment successful:", reference);
-      toast.success("Payment successful! Thank you for your purchase.");
+
+      // Trigger the email sending via your backend
+      try {
+        await axios.post("https://bookstore-1-ooja.onrender.com/api/mymail/send-receipt", {
+          email: userEmail,
+          amount: totalPrice * 100,
+          reference: reference.reference,
+        });
+        toast.success(
+          "Payment successful! A receipt has been sent to your email."
+        );
+      } catch (error) {
+        console.error("Error sending receipt email:", error);
+        toast.error(
+          "Payment was successful, but we couldn't send the receipt."
+        );
+      }
     },
     onClose: () => {
       toast("Payment process was canceled.");
     },
+  };
+
+  const getBookPrice = (book: any) => {
+    return selectedCurrency === "NGN"
+      ? book.prices?.NGN || book.price
+      : selectedCurrency === "EU"
+      ? book.prices?.EU || book.price
+      : selectedCurrency === "UK"
+      ? book.prices?.UK || book.price
+      : book.prices?.US || book.price;
   };
 
   return (
@@ -153,8 +196,13 @@ const CartList = () => {
                     )}
                     <div>
                       <h3 className="text-lg font-semibold">{book.title}</h3>
-                      <p className="text-sm text-gray-600">{book.description}</p>
-                      <p className="text-md font-bold">${book.price.toFixed(2)}</p>
+                      <p className="text-md font-bold">
+                        {selectedCurrency === "NGN" && `₦${getBookPrice(book).toFixed(2)}`}
+                        {selectedCurrency === "EU" && `€${getBookPrice(book).toFixed(2)}`}
+                        {selectedCurrency === "UK" && `£${getBookPrice(book).toFixed(2)}`}
+                        {selectedCurrency === "US" && `$${getBookPrice(book).toFixed(2)}`}
+                      </p>
+
                       <button
                         onClick={() => removeFromCart(book._id)}
                         className="text-red-500 hover:text-red-700 transition-colors"
@@ -174,14 +222,19 @@ const CartList = () => {
         <h3 className="text-xl font-bold mb-4">Order Summary</h3>
         <div className="flex justify-between mb-4">
           <span className="font-semibold">Total Price:</span>
-          <span className="font-bold">${totalPrice.toFixed(2)}</span>
+          <span className="font-bold">
+            {selectedCurrency === "NGN" && `₦${totalPrice.toFixed(2)}`}
+            {selectedCurrency === "EU" && `€${totalPrice.toFixed(2)}`}
+            {selectedCurrency === "UK" && `£${totalPrice.toFixed(2)}`}
+            {selectedCurrency === "US" && `$${totalPrice.toFixed(2)}`}
+          </span>
         </div>
 
         {PaystackButton && (
           <PaystackButton
             {...paystackConfig}
             text="Proceed to Checkout"
-            className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition-colors"
+            className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg"
           />
         )}
       </div>
