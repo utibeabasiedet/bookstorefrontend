@@ -1,5 +1,4 @@
-"use client";
-
+'use client'
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
@@ -7,14 +6,24 @@ import useCartState from "@/services/stateManager";
 import toast, { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 
-// Dynamically import PaystackButton to load on the client side
-const PaystackButton = dynamic(
-  () => import("react-paystack").then((mod) => mod.PaystackButton),
-  { ssr: false }
-);
+const PaystackButton = dynamic(() => import("react-paystack").then((mod) => mod.PaystackButton), { ssr: false });
+
+interface PaystackReference {
+  reference: string;
+  amount: number;
+  email: string;
+}
+
+interface CartItem {
+  _id: string;
+  title: string;
+  price: number;
+  image: string;
+  description: string;
+}
 
 const CartList = () => {
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +34,6 @@ const CartList = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Fetch the selected currency from localStorage
       const storedCurrency = localStorage.getItem("selectedCountry") || "NGN";
       setSelectedCurrency(storedCurrency);
     }
@@ -36,15 +44,9 @@ const CartList = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(
-          "https://bookstore-1-ooja.onrender.com/api/cart",
-          {
-            withCredentials: true,
-          }
-        );
-        const items = Array.isArray(response.data) ? response.data : [];
+        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/cart", { withCredentials: true });
+        const items: CartItem[] = Array.isArray(response.data) ? response.data : [];
         setCartItems(items);
-
         calculateTotalPrice(items);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -60,12 +62,7 @@ const CartList = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get(
-          "https://bookstore-1-ooja.onrender.com/api/users/profile",
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/users/profile", { withCredentials: true });
         setUserEmail(response.data.email);
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -76,18 +73,16 @@ const CartList = () => {
     fetchUserProfile();
   }, []);
 
-  const calculateTotalPrice = (items: any[]) => {
+  const calculateTotalPrice = (items: CartItem[]) => {
     const total = items.reduce((sum, item) => {
-      // Adjust the price based on the selected currency
       const price =
         selectedCurrency === "NGN"
-          ? item.prices?.NGN || item.price
+          ? item.price
           : selectedCurrency === "EU"
-          ? item.prices?.EU || item.price
+          ? item.price
           : selectedCurrency === "UK"
-          ? item.prices?.UK || item.price
-          : item.prices?.US || item.price;
-
+          ? item.price
+          : item.price;
       return sum + price;
     }, 0);
 
@@ -96,23 +91,13 @@ const CartList = () => {
 
   const removeFromCart = async (bookId: string) => {
     try {
-      const response = await axios.delete(
-        `https://bookstore-1-ooja.onrender.com/api/cart/delete/${bookId}`,
-        {
-          withCredentials: true,
-        }
-      );
-      const updatedCartItems = Array.isArray(response.data) ? response.data : [];
+      const response = await axios.delete(`https://bookstore-1-ooja.onrender.com/api/cart/delete/${bookId}`, { withCredentials: true });
+      const updatedCartItems: CartItem[] = Array.isArray(response.data) ? response.data : [];
       setCartItems(updatedCartItems);
-
       calculateTotalPrice(updatedCartItems);
 
-      const storedAddedBooks = JSON.parse(
-        localStorage.getItem("addedBooks") || "[]"
-      );
-      const newAddedBooks = storedAddedBooks.filter(
-        (id: string) => id !== bookId
-      );
+      const storedAddedBooks = JSON.parse(localStorage.getItem("addedBooks") || "[]");
+      const newAddedBooks = storedAddedBooks.filter((id: string) => id !== bookId);
       localStorage.setItem("addedBooks", JSON.stringify(newAddedBooks));
 
       cartState.cart.set(updatedCartItems);
@@ -130,24 +115,18 @@ const CartList = () => {
     amount: totalPrice * 100,
     publicKey: "pk_test_11f2b33c4435c39bba26d6ba87946a3f26f0d86e",
     currency: selectedCurrency,
-    onSuccess: async (reference) => {
+    onSuccess: async (reference: PaystackReference) => {
       console.log("Payment successful:", reference);
-
-      // Trigger the email sending via your backend
       try {
         await axios.post("https://bookstore-1-ooja.onrender.com/api/mymail/send-receipt", {
           email: userEmail,
           amount: totalPrice * 100,
           reference: reference.reference,
         });
-        toast.success(
-          "Payment successful! A receipt has been sent to your email."
-        );
+        toast.success("Payment successful! A receipt has been sent to your email.");
       } catch (error) {
         console.error("Error sending receipt email:", error);
-        toast.error(
-          "Payment was successful, but we couldn't send the receipt."
-        );
+        toast.error("Payment was successful, but we couldn't send the receipt.");
       }
     },
     onClose: () => {
@@ -155,14 +134,14 @@ const CartList = () => {
     },
   };
 
-  const getBookPrice = (book: any) => {
+  const getBookPrice = (book: CartItem) => {
     return selectedCurrency === "NGN"
-      ? book.prices?.NGN || book.price
+      ? book.price
       : selectedCurrency === "EU"
-      ? book.prices?.EU || book.price
+      ? book.price
       : selectedCurrency === "UK"
-      ? book.prices?.UK || book.price
-      : book.prices?.US || book.price;
+      ? book.price
+      : book.price;
   };
 
   return (
@@ -180,19 +159,10 @@ const CartList = () => {
               <p>Your cart is empty</p>
             ) : (
               cartItems.map((book) => (
-                <li
-                  key={book._id}
-                  className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl"
-                >
+                <li key={book._id} className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl">
                   <div className="flex items-center space-x-4">
                     {book.image && (
-                      <Image
-                        src={book.image}
-                        alt={book.title}
-                        width={80}
-                        height={100}
-                        className="rounded-md"
-                      />
+                      <Image src={book.image} alt={book.title} width={80} height={100} className="rounded-md" />
                     )}
                     <div>
                       <h3 className="text-lg font-semibold">{book.title}</h3>
@@ -202,41 +172,33 @@ const CartList = () => {
                         {selectedCurrency === "UK" && `£${getBookPrice(book).toFixed(2)}`}
                         {selectedCurrency === "US" && `$${getBookPrice(book).toFixed(2)}`}
                       </p>
-
-                      <button
-                        onClick={() => removeFromCart(book._id)}
-                        className="text-red-500 hover:text-red-700 transition-colors"
-                      >
-                        Remove
-                      </button>
+                      <p className="text-sm">{book.description}</p>
                     </div>
                   </div>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={() => removeFromCart(book._id)}
+                  >
+                    Remove
+                  </button>
                 </li>
               ))
             )}
           </ul>
         )}
       </div>
-
-      <div className="w-full lg:w-1/3 bg-gray-100 p-6 shadow-lg rounded-lg">
-        <h3 className="text-xl font-bold mb-4">Order Summary</h3>
-        <div className="flex justify-between mb-4">
-          <span className="font-semibold">Total Price:</span>
-          <span className="font-bold">
+      <div className="lg:w-1/4">
+        <h2 className="text-xl font-bold mb-4">Cart Summary</h2>
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <p className="text-lg font-semibold">Total Price:</p>
+          <p className="text-2xl font-bold">
             {selectedCurrency === "NGN" && `₦${totalPrice.toFixed(2)}`}
             {selectedCurrency === "EU" && `€${totalPrice.toFixed(2)}`}
             {selectedCurrency === "UK" && `£${totalPrice.toFixed(2)}`}
             {selectedCurrency === "US" && `$${totalPrice.toFixed(2)}`}
-          </span>
+          </p>
+          <PaystackButton {...paystackConfig} />
         </div>
-
-        {PaystackButton && (
-          <PaystackButton
-            {...paystackConfig}
-            text="Proceed to Checkout"
-            className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg"
-          />
-        )}
       </div>
     </div>
   );
