@@ -9,13 +9,10 @@ import useCartState from "@/services/stateManager"; // Assuming you have a Hooks
 const CategoriesCard = () => {
   const [books, setBooks] = useState<any[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("NGN");
-  const [addedBooks, setAddedBooks] = useState<Set<string>>(new Set());
   const cartState = useCartState();
+  const addedBooks = new Set(cartState.cart.get().map((item: any) => item._id)); // Set of book IDs in the cart
 
   useEffect(() => {
-    const country = localStorage.getItem("selectedCountry") || "NGN";
-    setSelectedCountry(country);
-
     const fetchTopBooks = async () => {
       try {
         const response = await axios.get("https://bookstore-1-ooja.onrender.com/api/books?limit=4");
@@ -49,7 +46,6 @@ const CategoriesCard = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        setAddedBooks(new Set([...addedBooks, book._id]));
         cartState.cart.set((prevCart: any) => [...prevCart, response.data]);
       } else {
         throw new Error("Failed to add item to cart");
@@ -63,9 +59,6 @@ const CategoriesCard = () => {
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const country = event.target.value;
     setSelectedCountry(country);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("selectedCountry", country);
-    }
   };
 
   return (
@@ -87,7 +80,7 @@ const CategoriesCard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {books.slice(0, 4).map((book) => {  // Use slice to limit to 4 items
+        {books.map((book) => {  
           const price = selectedCountry === "NGN"
             ? book.prices.NGN
             : selectedCountry === "EU"
@@ -115,7 +108,6 @@ const CategoriesCard = () => {
 
                 {/* Content */}
                 <div className="p-4">
-                  {/* <h5 className="text-gray-700 text-sm font-semibold">{book.category}uu</h5> */}
                   <h3 className="text-lg font-bold text-gray-900">
                     <a href="shop-details.html">{book.title}</a>
                   </h3>
@@ -149,7 +141,7 @@ const CategoriesCard = () => {
                     className={`flex justify-center items-center rounded-full bg-[#d0e1e7] font-bold hover:bg-orange-600 hover:text-white text-[#036280] py-4 px-4 w-full transition-all duration-300`}
                   >
                     <FaShoppingBasket className="mr-2 w-[25px]" />
-                    {addedBooks.has(book._id) ? "View Cart" : "Add To Cart"}
+                    {addedBooks.has(book._id) ? "View Cart" : "Add To Cart"}   
                   </button>
                 </div>
               </div>

@@ -1,3 +1,5 @@
+
+
 // 'use client';
 // import React, { useState, useEffect } from "react";
 // import Image from "next/image";
@@ -7,19 +9,11 @@
 // import useCartState from "@/services/stateManager";
 // import { toast } from "react-hot-toast"; // Import hot toast
 
-// interface CartItem {
-//   _id: string;
-//   title: string;
-//   price: number;
-//   image: string;
-//   description?: string; // Optional if not always present
-// }
-
 // const BookList = () => {
-//   const [books, setBooks] = useState<any[]>([]);
-//   const [userId, setUserId] = useState<string | null>(null);
-//   const [selectedCountry, setSelectedCountry] = useState<string>("NGN");
-//   const [addedBooks, setAddedBooks] = useState<Set<string>>(new Set());
+//   const [books, setBooks] = useState([]);
+//   const [userId, setUserId] = useState(null);
+//   const [selectedCountry, setSelectedCountry] = useState("NGN");
+//   const [addedBooks, setAddedBooks] = useState(new Set());
 //   const router = useRouter();
 
 //   const cartState = useCartState();
@@ -60,17 +54,17 @@
 //     fetchBooks();
 //   }, []);
 
-//   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+//   const handleCountryChange = (event) => {
 //     const country = event.target.value;
 //     setSelectedCountry(country);
 //     localStorage.setItem("selectedCountry", country);
 //   };
 
-//   const handleViewDetails = (bookId: string) => {
+//   const handleViewDetails = (bookId) => {
 //     router.push(`/shop/${bookId}`);
 //   };
 
-//   const addToCart = async (book: any) => {
+//   const addToCart = async (book) => {
 //     if (!userId) {
 //       toast.error("User ID not found. Cannot add to cart.");
 //       return;
@@ -86,12 +80,12 @@
 //         : book.prices?.US || 0;
 
 //     try {
-//       const cartItem: CartItem = {
+//       const cartItem = {
 //         _id: book._id,
 //         title: book.title,
 //         price: price,
 //         image: book.imageUrl,
-//         description: book.description ?? "", // Handle optional description
+//         description: book.description || "", // Handle optional description
 //       };
 
 //       const response = await axios.post(
@@ -112,7 +106,7 @@
 //         localStorage.setItem("addedBooks", JSON.stringify([...newAddedBooks]));
 
 //         // Update the cart state
-//         cartState.cart.set((prevCart: CartItem[]) => [...prevCart, cartItem]);
+//         cartState.cart.set((prevCart) => [...prevCart, cartItem]);
 
 //         toast.success(`${book.title} added to cart!`);
 //       } else {
@@ -216,22 +210,22 @@
 //   );
 // };
 
-// export default BookList
+// export default BookList;
 
 'use client';
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // import useRouter from Next.js
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import useCartState from "@/services/stateManager";
-import { toast } from "react-hot-toast"; // Import hot toast
+import { toast } from "react-hot-toast"; 
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
   const [userId, setUserId] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState("NGN");
-  const [addedBooks, setAddedBooks] = useState(new Set());
+  const [cartItems, setCartItems] = useState([]); // Store cart items from backend
   const router = useRouter();
 
   const cartState = useCartState();
@@ -240,11 +234,7 @@ const BookList = () => {
     const country = localStorage.getItem("selectedCountry") || "NGN";
     setSelectedCountry(country);
 
-    const storedAddedBooks = localStorage.getItem("addedBooks");
-    if (storedAddedBooks) {
-      setAddedBooks(new Set(JSON.parse(storedAddedBooks)));
-    }
-
+    // Fetch user profile and cart items from the backend
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
@@ -252,6 +242,9 @@ const BookList = () => {
           { withCredentials: true }
         );
         setUserId(response.data._id);
+
+        // Fetch cart items once userId is available
+        fetchCartItems(response.data._id);
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
       }
@@ -265,6 +258,19 @@ const BookList = () => {
         setBooks(response.data);
       } catch (error) {
         console.error("Failed to fetch books:", error);
+      }
+    };
+
+    const fetchCartItems = async (userId) => {
+      try {
+        const response = await axios.get(
+          `https://bookstore-1-ooja.onrender.com/api/cart/${userId}`,
+          { withCredentials: true }
+        );
+        setCartItems(response.data); // Store cart items in state
+        cartState.cart.set(response.data); // Sync with global cart state
+      } catch (error) {
+        console.error("Failed to fetch cart items:", error);
       }
     };
 
@@ -303,7 +309,7 @@ const BookList = () => {
         title: book.title,
         price: price,
         image: book.imageUrl,
-        description: book.description || "", // Handle optional description
+        description: book.description || "",
       };
 
       const response = await axios.post(
@@ -318,14 +324,8 @@ const BookList = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        const newAddedBooks = new Set([...addedBooks, book._id]);
-        setAddedBooks(newAddedBooks);
-
-        localStorage.setItem("addedBooks", JSON.stringify([...newAddedBooks]));
-
-        // Update the cart state
+        setCartItems((prevItems) => [...prevItems, cartItem]);
         cartState.cart.set((prevCart) => [...prevCart, cartItem]);
-
         toast.success(`${book.title} added to cart!`);
       } else {
         throw new Error("Failed to add item to cart");
@@ -406,17 +406,19 @@ const BookList = () => {
 
                   <button
                     onClick={() =>
-                      addedBooks.has(book._id)
+                      cartItems.some((item) => item._id === book._id)
                         ? handleViewDetails(book._id)
                         : addToCart(book)
                     }
                     className={`flex justify-center mt-4 items-center rounded-full font-bold py-4 px-4 w-full transition-all duration-300 ${
-                      addedBooks.has(book._id)
+                      cartItems.some((item) => item._id === book._id)
                         ? "bg-green-500 hover:bg-green-600 text-white"
                         : "bg-[#d0e1e7] hover:bg-orange-600 hover:text-white"
                     }`}
                   >
-                    {addedBooks.has(book._id) ? "View Details" : "Add to Cart"}
+                    {cartItems.some((item) => item._id === book._id)
+                      ? "View Details"
+                      : "Add to Cart"}
                   </button>
                 </div>
               </div>
@@ -429,4 +431,3 @@ const BookList = () => {
 };
 
 export default BookList;
-
