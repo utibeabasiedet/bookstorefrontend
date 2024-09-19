@@ -22,7 +22,7 @@ const Footer = () => {
             <div className="flex space-x-4">
               {/* Facebook */}
               <Link
-                href="https://facebook.com"
+                href="https://www.facebook.com/profile.php?id=100069431191071"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 flex items-center justify-center border border-white bg-gray-900 text-white rounded-md hover:bg-gray-700 transition-colors">
@@ -40,7 +40,7 @@ const Footer = () => {
 
               {/* Instagram */}
               <Link
-                href="https://instagram.com"
+                href="https://instagram.com/uyai.akwa.ibom?igshid=MjEwN2IyYWYwYw=="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 flex items-center justify-center bg-gray-900 text-white rounded-md hover:bg-gray-700 transition-colors">
@@ -49,7 +49,7 @@ const Footer = () => {
 
               {/* YouTube */}
               <Link
-                href="https://youtube.com"
+                href="https://youtube.com/@UyaiAkwaIbom-fr6wm"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 flex items-center justify-center bg-gray-900 text-white rounded-md hover:bg-gray-700 transition-colors">
@@ -107,7 +107,7 @@ const Footer = () => {
       </div>
 
       {/* Footer bottom */}
-      <footer className="font-[0.875rem] text-[#949597] bg-[#036280] text-center py-6">
+      <footer className="font-[0.875rem] text-white bg-[#036280] text-center py-6">
         <span>© All Copyright 2024 by UAIER.</span>
       </footer>
     </section>

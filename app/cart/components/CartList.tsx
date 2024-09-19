@@ -29,6 +29,7 @@ const CartList = () => {
     if (typeof window !== "undefined") {
       // Fetch the selected currency from localStorage
       const storedCurrency = localStorage.getItem("selectedCountry") || "NGN";
+      console.log(storedCurrency,'currency')
       setSelectedCurrency(storedCurrency);
     }
   }, []);

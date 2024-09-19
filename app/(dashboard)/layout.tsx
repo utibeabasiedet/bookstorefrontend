@@ -3,6 +3,7 @@
 import Header from "@/components/Header";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import SidebarMenu from "./components/SideBar";
 
 
 
@@ -32,7 +33,7 @@ export default function RootLayout({
 
           <div className="flex gap-0 h-auto ">
             <div className="w-[260px] sm:mr-12 lg:block hidden">
-              SidebarMenu 
+              <SidebarMenu />
             </div>
 
             <div className="md:px-[2rem]   bg-[#F6F9FF]   pt-[1.5rem] pb-10 md:pb-10    h-auto   relative w-full ">

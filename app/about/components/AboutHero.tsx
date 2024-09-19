@@ -7,18 +7,26 @@ const AboutHero = () => {
     <section className="pt-[68px] padding-x aboutBackground overflow-hidden pb-0 sm:pb-10">
       <div className="flex flex-col px-8 max-w-[1150px] mx-auto lg:items-start lg:flex-row justify-between items-center">
         <div className="lg:w-[50%]">
-          <div className="mb-10">WHO WE ARE</div>
+          {/* <div className="mb-10">WHO WE ARE</div> */}
           <div className="md:max-w-[500px] mb-10 max-w-[273px] leading-[1] text-primary md:text-[38px] text-[36px] tracking-[] font-bold">
-          Celebrate Akwa Ibom's Literary Treasures!
+            Celebrate Akwa Ibom's Literary Treasures!
           </div>
           <div className="mb-10 max-w-full mt-0 text-primary-2101">
-          At our store, we're passionate about sharing the vibrant stories and rich traditions of Akwa Ibom with book lovers around the world. Our mission is to make these unique books accessible globally, fostering a deeper appreciation for Akwa Ibom's diverse cultures and histories. From local folklore to contemporary works, explore our collection and join us in connecting people through literature and cultural exchange.
-
-
+            At Uyai Akwa Ibom, we are a family trio - aunt, uncle, and niece -
+            united by our deep love for our vibrant culture. Our journey began
+            from a burning desire to share the richness of our heritage with the
+            world. Driven by this passion, we embarked on creating the Ikọ
+            Ibibio series. Our inspiration came from noticing a gap in language
+            resources for children and Adults. While languages like Yoruba,
+            Hausa, and Igbo had resources featuring relatable characters, Ibibio
+            and other indigenous languages in Akwa Ibom was underrepresented.
+            Determined to change this narrative, we joined forces to craft the
+            Ikọ Ibibio series, aimed at both children and adults, fostering a
+            love for the indigenous languages and culture.
           </div>
           <div>
             <Link href="/signup" passHref>
-              <button className="bg-[#fd7e14] hover:bg-[#f76707] text-white font-semibold py-3 px-8 rounded-[8px] transition-transform duration-300 hover:scale-105 shadow-lg">
+              <button className="bg-black hover:bg-[#010101] text-white font-semibold py-3 px-8 rounded-[8px] transition-transform duration-300 hover:scale-105 shadow-lg">
                 Get Started
               </button>
             </Link>
@@ -33,8 +41,7 @@ const AboutHero = () => {
                 width={1200}
                 height={1246}
                 viewBox="0 0 1511 1246"
-                fill="none"
-              >
+                fill="none">
                 <g opacity={0.8} filter="url(#filter0_f_5346_23209)">
                   <path
                     fillRule="evenodd"
@@ -51,8 +58,7 @@ const AboutHero = () => {
                     width={1511}
                     height={1246}
                     filterUnits="userSpaceOnUse"
-                    colorInterpolationFilters="sRGB"
-                  >
+                    colorInterpolationFilters="sRGB">
                     <feFlood floodOpacity={0} result="BackgroundImageFix" />
                     <feBlend
                       mode="normal"
