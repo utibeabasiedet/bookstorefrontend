@@ -1,5 +1,5 @@
 import Image from "next/image";
-import heroImage from "../../../public/img/about.jpg";
+import heroImage from "../../../../public/img/about.jpg";
 import Link from "next/link";
 
 const AboutHero = () => {

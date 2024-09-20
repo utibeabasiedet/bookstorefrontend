@@ -1,4 +1,4 @@
-import Testimoni from "../(home)/components/testimonal";
+import Testimoni from "../components/testimonal";
 
 
 

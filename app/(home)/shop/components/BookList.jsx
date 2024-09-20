@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -6,7 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import useCartState from "@/services/stateManager";
-import { toast } from "react-hot-toast"; 
+import { toast } from "react-hot-toast";
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
@@ -39,6 +38,7 @@ const BookList = () => {
       }
     };
 
+
     const fetchBooks = async () => {
       try {
         const response = await axios.get(
@@ -66,6 +66,8 @@ const BookList = () => {
     fetchUserProfile();
     fetchBooks();
   }, []);
+
+  
 
   const Loader = () => (
     <div className="flex justify-center items-center h-4">
