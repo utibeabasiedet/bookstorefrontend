@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} flex bg-blac flex-col justify-between min-h-[100vh]`}>
+      <body className={`${inter.className} min-h-[100vh]`}>
         <Header />
         <ToastContainer />
         {children}

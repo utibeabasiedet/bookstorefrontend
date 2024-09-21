@@ -29,7 +29,7 @@ const CartList = () => {
     if (typeof window !== "undefined") {
       // Fetch the selected currency from localStorage
       const storedCurrency = localStorage.getItem("selectedCountry") || "NGN";
-      console.log(storedCurrency,'currency')
+    
       setSelectedCurrency(storedCurrency);
     }
   }, []);
@@ -74,7 +74,7 @@ const CartList = () => {
         );
         setUserEmail(response.data.email);
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        
         setError("Failed to load user information.");
       }
     };
@@ -87,7 +87,7 @@ const CartList = () => {
 
     items.forEach(item => {
       // Log the item for debugging
-      console.log("Item:", item);
+      // console.log("Item:", item);
 
       // Adjust the price based on the selected currency
       const price =
@@ -103,9 +103,7 @@ const CartList = () => {
       const priceValue = typeof price === "number" ? price : 0;
 
       // Log the price and its value for debugging
-      console.log(
-        `Item: ${item.title}, Price: ${price}, Price Value: ${priceValue}`
-      );
+     
 
       total += priceValue;
     });
@@ -139,7 +137,7 @@ const CartList = () => {
       cartState.cart.set(updatedCartItems);
       toast.success("Item removed from cart.");
     } catch (error) {
-      console.error("Error removing item from cart:", error);
+   
       setError("Failed to remove item. Please try again.");
       toast.error("Failed to remove item.");
     }

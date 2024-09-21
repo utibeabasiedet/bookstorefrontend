@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,6 @@ const BookList = () => {
       }
     };
 
-
     const fetchBooks = async () => {
       try {
         const response = await axios.get(
@@ -50,7 +49,7 @@ const BookList = () => {
       }
     };
 
-    const fetchCartItems = async (userId) => {
+    const fetchCartItems = async userId => {
       try {
         const response = await axios.get(
           `https://bookstore-1-ooja.onrender.com/api/cart/${userId}`,
@@ -67,7 +66,30 @@ const BookList = () => {
     fetchBooks();
   }, []);
 
-  
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      try {
+        const response = await axios.get(
+          "https://bookstore-1-ooja.onrender.com/api/cart",
+          {
+            withCredentials: true,
+          }
+        );
+        const items = Array.isArray(response.data) ? response.data : [];
+        setCartItems(items);
+
+        // Log the cart items for debugging
+        console.log("Cart Items in booklist:", items);
+
+        calculateTotalPrice(items);
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+        setError("Failed to load cart items. Please try again.");
+      }
+    };
+
+    fetchCartItems();
+  }, [cartState.cart]);
 
   const Loader = () => (
     <div className="flex justify-center items-center h-4">
@@ -75,17 +97,17 @@ const BookList = () => {
     </div>
   );
 
-  const handleCountryChange = (event) => {
+  const handleCountryChange = event => {
     const country = event.target.value;
     setSelectedCountry(country);
     localStorage.setItem("selectedCountry", country);
   };
 
-  const handleViewDetails = (bookId) => {
+  const handleViewDetails = bookId => {
     router.push(`/shop/${bookId}`);
   };
 
-  const addToCart = async (book) => {
+  const addToCart = async book => {
     setLoadingItemId(book._id);
     if (!userId) {
       toast.error("User ID not found. Cannot add to cart.");
@@ -122,8 +144,8 @@ const BookList = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        setCartItems((prevItems) => [...prevItems, cartItem]);
-        cartState.cart.set((prevCart) => [...prevCart, cartItem]);
+        setCartItems(prevItems => [...prevItems, cartItem]);
+        cartState.cart.set(prevCart => [...prevCart, cartItem]);
         toast.success(`${book.title} added to cart!`);
         setLoadingItemId(false); // Clear loading state
       } else {
@@ -145,8 +167,7 @@ const BookList = () => {
           id="currency"
           value={selectedCountry}
           onChange={handleCountryChange}
-          className="ml-2 p-2 border border-gray-300 rounded"
-        >
+          className="ml-2 p-2 border border-gray-300 rounded">
           <option value="NGN">NGN</option>
           <option value="EU">EU</option>
           <option value="UK">UK</option>
@@ -155,7 +176,7 @@ const BookList = () => {
       </div>
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {books.map((book) => {
+        {books.map(book => {
           const price =
             selectedCountry === "NGN"
               ? book.prices?.NGN || 0
@@ -172,8 +193,7 @@ const BookList = () => {
                   <div className="relative w-full bg-[#f5f5f5] flex justify-center items-center mx-auto h-64">
                     <a
                       href="#"
-                      className="w-[90%] justify-center items-center flex mx-auto"
-                    >
+                      className="w-[90%] justify-center items-center flex mx-auto">
                       <Image
                         src={book.imageUrl}
                         alt={book.title}
@@ -220,26 +240,27 @@ const BookList = () => {
                       : "Add to Cart"}
                   </button> */}
 
-<button
-  onClick={() =>
-    cartItems.some((item) => item._id === book._id)
-      ? handleViewDetails(book._id)
-      : addToCart(book)
-  }
-  className={`flex justify-center items-center mt-4 rounded-full font-bold py-4 px-4 w-full transition-all duration-300 ${
-    cartItems.some((item) => item._id === book._id)
-      ? "bg-green-500 hover:bg-green-600 text-white"
-      : "bg-[#d0e1e7] hover:bg-orange-600 hover:text-white"
-  }`}
-  disabled={loadingItemId === book._id} // Disable button while loading
->
-  {loadingItemId === book._id ? (
-    <Loader /> // Show loader when loading
-  ) : (
-    cartItems.some((item) => item._id === book._id) ? "View Details" : "Add to Cart"
-  )}
-</button>
-
+                  <button
+                    onClick={() =>
+                      cartItems.some(item => item._id === book._id)
+                        ? handleViewDetails(book._id)
+                        : addToCart(book)
+                    }
+                    className={`flex justify-center items-center mt-4 rounded-full font-bold py-4 px-4 w-full transition-all duration-300 ${
+                      cartItems.some(item => item._id === book._id)
+                        ? "bg-green-500 hover:bg-green-600 text-white"
+                        : "bg-[#d0e1e7] hover:bg-orange-600 hover:text-white"
+                    }`}
+                    disabled={loadingItemId === book._id} // Disable button while loading
+                  >
+                    {loadingItemId === book._id ? (
+                      <Loader /> // Show loader when loading
+                    ) : cartItems.some(item => item._id === book._id) ? (
+                      "View Details"
+                    ) : (
+                      "Add to Cart"
+                    )}
+                  </button>
                 </div>
               </div>
             </li>

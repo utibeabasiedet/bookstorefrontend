@@ -22,14 +22,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} flex bg-blac flex-col justify-between min-h-[100vh]`}>
-        <Header />
-        <ToastContainer />
+    // <html lang="en">
+    //   <body className={`${inter.className} flex bg-blac flex-col justify-between min-h-[100vh]`}>
+      <div>
+      <ToastContainer />
         {children}
         <Footer />
+      </div>
         
-      </body>
-    </html>
+      
   );
 }

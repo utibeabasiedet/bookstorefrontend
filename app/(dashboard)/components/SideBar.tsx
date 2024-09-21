@@ -66,20 +66,20 @@ const SidebarMenu = () => {
   };
 
   return (
-    <aside className="w-[260px] fixe pt-[40px] z-50 bg-[#012E4A] flex flex-col justify-between h-[87vh]">
-      <ul className="flex flex-col  text-white">
+    <aside className="w-[260px] fixed pt-[40px] z-50 bg-[#012E4A] flex flex-col justify-between h-[87vh]">
+      <ul className="flex flex-col  text-black">
         {topMenuItems.map((item, index) => (
           <Link key={index} href={item.href}>
             <li
-              className={`flex text-white items-center space-x-2 py-[12px] px-4 ${
+              className={`flex text-[#FF6700] items-center space-x-2 py-[12px] px-4 ${
                 pather.startsWith(item.href)
-                  ? "bg-white text-[#FF6700] border-l-4 border-[#FF6700]"
+                  ? "bg-white text-black border-l-4 border-[#FF6700]"
                   : ""
               }`}
               onClick={() => setActiveMenuItem(item.href)}
             >
               <span>{item.icon}</span>
-              <span className="text-[14px]">{item.label}</span>
+              <span className="text-[14px] ">{item.label}</span>
             </li>
           </Link>
         ))}
