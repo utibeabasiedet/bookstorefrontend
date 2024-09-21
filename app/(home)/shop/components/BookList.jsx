@@ -78,13 +78,12 @@ const BookList = () => {
         const items = Array.isArray(response.data) ? response.data : [];
         setCartItems(items);
 
-        // Log the cart items for debugging
-        console.log("Cart Items in booklist:", items);
+       
 
         calculateTotalPrice(items);
       } catch (error) {
         console.error("Error fetching cart items:", error);
-        setError("Failed to load cart items. Please try again.");
+       
       }
     };
 

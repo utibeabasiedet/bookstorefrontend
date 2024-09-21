@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import { useState } from 'react'; 
 import { useRouter } from 'next/navigation'; 
 import { Button } from "@/components/ui/button";
+import 'react-phone-number-input/style.css';
+import PhoneInput from 'react-phone-number-input';
 import {
   Form,
   FormControl,
@@ -20,7 +22,7 @@ import { FaSpinner } from 'react-icons/fa';
 import axios from "axios";
 import Link from "next/link";
 
-// Define the schema using Zod
+// Define the schema using Zod with phone number validation
 const formSchema = z.object({
   name: z.string().min(1, {
     message: "Name is required.",
@@ -30,6 +32,9 @@ const formSchema = z.object({
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
+  }),
+  phoneNumber: z.string().min(10, {
+    message: "Phone number is required.",
   }),
 });
 
@@ -45,6 +50,7 @@ const RegisterForm = () => {
       name: "",
       email: "",
       password: "",
+      phoneNumber: "",
     },
     mode: "onChange",
   });
@@ -54,7 +60,7 @@ const RegisterForm = () => {
     try {
       const response = await axios.post(
         "https://bookstore-1-ooja.onrender.com/api/users/register", 
-        data, 
+        data, // Include phone number in the data
         {
           headers: {
             "Content-Type": "application/json",
@@ -63,6 +69,7 @@ const RegisterForm = () => {
         }
       );
       if (response.status >= 200 && response.status < 300) {
+        console.log(response.data)
         toast.success("User registered successfully!");
         router.push("/login");
       } else {
@@ -80,7 +87,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-300">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
         <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">Create Account</h1>
         <Form {...form}>
@@ -127,6 +134,28 @@ const RegisterForm = () => {
                 </FormItem>
               )}
             />
+            {/* Phone Number Field */}
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-blue-700">Phone Number</FormLabel>
+                  <FormControl>
+                  <Input  placeholder="Enter phone number" {...field} />
+                    {/* <PhoneInput
+                      {...field}
+                      defaultCountry="NG"
+                      international
+                      withCountryCallingCode
+                      placeholder="Enter phone number"
+                      className="w-full border rounded-md px-3 py-2"
+                    /> */}
+                  </FormControl>
+                  <FormMessage className="text-red-600" />
+                </FormItem>
+              )}
+            />
             {/* Submit Button */}
             <Button
               type="submit"
@@ -151,7 +180,7 @@ const RegisterForm = () => {
                 </Link>
               </p>
               <Link className="text-sm text-blue-700 hover:underline" href="#">
-               Forgot Password?
+                Forgot Password?
               </Link>
             </div>
           </form>

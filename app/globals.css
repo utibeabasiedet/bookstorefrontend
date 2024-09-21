@@ -4,3 +4,14 @@
 
 @import "~slick-carousel/slick/slick.css"; 
 @import "~slick-carousel/slick/slick-theme.css";
+
+
+@layer utilities {
+  
+  
+    /* =====  REACT PHONE NUMBER INPUT OVERRIDES */
+    .input-phone {
+      @apply mt-2 h-11 rounded-md px-3 text-sm border  placeholder:text-dark-600 border-dark-500 !important;
+    }
+  
+  }
