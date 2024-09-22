@@ -330,7 +330,7 @@ import axios from "axios";
 import Image from "next/image";
 import useCartState from "@/services/stateManager";
 import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 import { FlutterWaveButton, closePaymentModal } from "flutterwave-react-v3";
 
 const CartList = () => {
@@ -340,6 +340,8 @@ const CartList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
+  const [userPhoneNumber, setUserPhoneNumber] = useState<string>("");
   const [selectedCurrency, setSelectedCurrency] = useState<string>("NGN");
 
   const cartState = useCartState();
@@ -385,6 +387,8 @@ const CartList = () => {
           }
         );
         setUserEmail(response.data.email);
+        setUserName(response.data.name); // Fetching user name
+        setUserPhoneNumber(response.data.phoneNumber || "08000000000"); // Set a default phone number or fetch from profile
       } catch (error) {
         setError("Failed to load user information.");
       }
@@ -410,7 +414,9 @@ const CartList = () => {
           withCredentials: true,
         }
       );
-      const updatedCartItems = Array.isArray(response.data) ? response.data : [];
+      const updatedCartItems = Array.isArray(response.data)
+        ? response.data
+        : [];
       setCartItems(updatedCartItems);
       calculateTotalPrice(updatedCartItems);
       cartState.cart.set(updatedCartItems);
@@ -444,31 +450,42 @@ const CartList = () => {
     payment_options: "card, mobilemoney, ussd",
     customer: {
       email: userEmail,
+      phone_number: userPhoneNumber, // Phone number added
+      name: userName, // User name added
     },
     customizations: {
       title: "Bookstore Payment",
       description: "Payment for books in cart",
       logo: "https://your-logo-url.com/logo.png", // Replace with your logo URL
     },
-    onSuccess: async (reference: any) => {
-      toast.success("Payment successful! Thank you for your purchase.");
-      const orderData = {
-        orderItems: cartItems.map(item => ({
-          title: item.title,
-          price: item.price,
-          book: item._id,
-        })),
-        totalPrice: totalPrice,
-      };
-      await createOrder(orderData);
-      await axios.delete("https://bookstore-1-ooja.onrender.com/api/cart/clear", {
-        withCredentials: true,
-      });
-      setCartItems([]);
-      cartState.cart.set([]);
-      toast.success("Cart cleared successfully.");
-      router.push('/userdashboard');
-      closePaymentModal();
+    callback: async (response: any) => {
+      if (response.status === "successful") {
+        // Handle successful payment
+        toast.success("Payment successful! Thank you for your purchase.");
+        const orderData = {
+          orderItems: cartItems.map(item => ({
+            title: item.title,
+            price: item.price,
+            book: item._id,
+          })),
+          totalPrice: totalPrice,
+        };
+        await createOrder(orderData);
+        await axios.delete(
+          "https://bookstore-1-ooja.onrender.com/api/cart/clear",
+          {
+            withCredentials: true,
+          }
+        );
+        setCartItems([]);
+        cartState.cart.set([]);
+        toast.success("Cart cleared successfully.");
+        router.push("/userdashboard");
+        closePaymentModal(); // Close the payment modal after success
+      } else {
+        // Handle payment failure
+        toast.error("Payment failed. Please try again.");
+      }
     },
     onClose: () => {
       toast("Payment process was canceled.");
@@ -492,7 +509,8 @@ const CartList = () => {
               cartItems.map(book => (
                 <li
                   key={book._id}
-                  className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl">
+                  className="flex items-center justify-between bg-gray-100 p-4 rounded-2xl"
+                >
                   <div className="flex items-center space-x-4">
                     {book.image && (
                       <Image
@@ -506,14 +524,19 @@ const CartList = () => {
                     <div>
                       <h3 className="text-lg font-semibold">{book.title}</h3>
                       <p className="text-md font-bold">
-                        {selectedCurrency === "NGN" && `₦${book.price ?? "Price not available"}`}
-                        {selectedCurrency === "EU" && `€${book.price ?? "Price not available"}`}
-                        {selectedCurrency === "UK" && `£${book.price ?? "Price not available"}`}
-                        {selectedCurrency === "US" && `$${book.price ?? "Price not available"}`}
+                        {selectedCurrency === "NGN" &&
+                          `₦${book.price ?? "Price not available"}`}
+                        {selectedCurrency === "EU" &&
+                          `€${book.price ?? "Price not available"}`}
+                        {selectedCurrency === "UK" &&
+                          `£${book.price ?? "Price not available"}`}
+                        {selectedCurrency === "US" &&
+                          `$${book.price ?? "Price not available"}`}
                       </p>
                       <button
                         onClick={() => removeFromCart(book._id)}
-                        className="text-red-500 hover:text-red-700 transition-colors">
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
                         Remove
                       </button>
                     </div>
@@ -548,4 +571,3 @@ const CartList = () => {
 };
 
 export default CartList;
-
